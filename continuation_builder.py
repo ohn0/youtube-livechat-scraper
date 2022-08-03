@@ -21,7 +21,7 @@ class ContinuationFetcher:
     def initializeContext(self):
         context = {}
         context["client"] = self.initializeClient()
-        context["user"]["lockedSafetyMode"] = False
+        context["user"]= {"lockedSafetyMode" : False}
         context["request"] = {}
         context["clickTracking"] = {}
         context["adSignalsInfo"] = {}
@@ -30,9 +30,14 @@ class ContinuationFetcher:
     
     def initializeClient(self):
         client = {}
+        client["hl"] = "en"
+        client["gl"] = "US"
         client["visitorData"] = ""
         client["remoteHost"] = ""
+        client["deviceMake"] = ""
+        client["deviceModel"] = ""
         client["userAgent"] = ""
+        client["clientName"] = "WEB"
         client["clientVersion"] = "2.20220801.00.00"
         client["osName"] = ""
         client["osVersion"] = ""
