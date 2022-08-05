@@ -1,4 +1,3 @@
-from logging.handlers import SYSLOG_UDP_PORT
 from bs4 import BeautifulSoup
 import json
 
@@ -14,11 +13,13 @@ class livechatParser:
 
     def findContent(self):
         scripts = self.soupParser.find_all('script')
+        print(scripts)
         content = str([x for x in scripts if "authorName" in x.text][0])
         startIndex = content.find('{')
         endIndex = len(content) - content[::1].find('}')
         liveChatContents = json.loads(content[startIndex:endIndex])
-        liveChat = liveChatContents["continuationContents"]["liveChatContinuation"]["actions"]
+        return liveChatContents["continuationContents"]["liveChatContinuation"]["actions"]
+
 
 
     
