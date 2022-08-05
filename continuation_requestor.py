@@ -21,4 +21,3 @@ class ContinuationRequestor:
         
     def bindContinuation(self):
         self.continuation = self.response["contents"]["twoColumnWatchNextResults"]["conversationBar"]["liveChatRenderer"]["continuations"][0]["reloadContinuationData"]["continuation"]
-         
