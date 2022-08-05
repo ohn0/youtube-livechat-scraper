@@ -33,10 +33,11 @@ def getSuccessfulInitialLiveChat():
     liveChatParser = livechatParser('html.parser')
     liveChatParser.buildParser(initialLiveChatData)
     content = liveChatParser.findContent()
-
+    chatMessageList = []
     for c in content[1::]:
-        print(c["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]
+        chatMessageList.append(c["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]
                   ["liveChatTextMessageRenderer"]["message"]["runs"][0])
+    return len(chatMessageList) > 0
 
 
 if not continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
@@ -49,4 +50,7 @@ if not continuationRequestorMakesSuccessfulRequest():
 else:
     print("ContinuationRequestor good")
 
-getSuccessfulInitialLiveChat()
+if not getSuccessfulInitialLiveChat():
+    print("Unable to make a successful initial livechat request to youtube and successfully parse data")
+else:
+    print("Calling initial live chat and parsing response good")

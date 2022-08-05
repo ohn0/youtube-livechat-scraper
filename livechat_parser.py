@@ -13,10 +13,9 @@ class livechatParser:
 
     def findContent(self):
         scripts = self.soupParser.find_all('script')
-        print(scripts)
         content = str([x for x in scripts if "authorName" in x.text][0])
         startIndex = content.find('{')
-        endIndex = len(content) - content[::1].find('}')
+        endIndex = len(content) - content[::-1].find('}')
         liveChatContents = json.loads(content[startIndex:endIndex])
         return liveChatContents["continuationContents"]["liveChatContinuation"]["actions"]
 
