@@ -4,10 +4,10 @@ base_url = "https://www.youtube.com/youtubei/v1/next?"
 
 class ContinuationFetcher:
     params = {}
-    offset = 0
-    def __init__(self, videoId, offsetMs = 0):
+    playerState = None
+    def __init__(self, videoId, PlayerState = None):
         self.initializeParams(videoId)
-        self.offset = offsetMs
+        self.playerState = PlayerState
 
     def initializeParams(self, videoId):
         self.params["context"] = self.initializeContext()
@@ -27,8 +27,8 @@ class ContinuationFetcher:
         context["clickTracking"] = {}
         context["adSignalsInfo"] = {}
 
-        if offsetRequest:
-            context["currentPlayerState"] = {"playerOffsetMs" : "100000"}
+        if self.playerState is not None:
+            context["currentPlayerState"] = self.playerState
         
         return context
     
