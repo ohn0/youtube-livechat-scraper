@@ -4,9 +4,10 @@ base_url = "https://www.youtube.com/youtubei/v1/next?"
 
 class ContinuationFetcher:
     params = {}
-
-    def __init__(self, videoId):
+    offset = 0
+    def __init__(self, videoId, offsetMs = 0):
         self.initializeParams(videoId)
+        self.offset = offsetMs
 
     def initializeParams(self, videoId):
         self.params["context"] = self.initializeContext()
@@ -18,7 +19,7 @@ class ContinuationFetcher:
         self.params["playbackContext"] = {}
         self.params["captionRequested"] = False
 
-    def initializeContext(self):
+    def initializeContext(self, offsetRequest = True):
         context = {}
         context["client"] = self.initializeClient()
         context["user"]= {"lockedSafetyMode" : False}
@@ -26,6 +27,9 @@ class ContinuationFetcher:
         context["clickTracking"] = {}
         context["adSignalsInfo"] = {}
 
+        if offsetRequest:
+            context["currentPlayerState"] = {"playerOffsetMs" : "100000"}
+        
         return context
     
     def initializeClient(self):
