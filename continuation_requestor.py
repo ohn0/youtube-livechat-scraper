@@ -1,8 +1,8 @@
 import requests
 from continuation_builder import ContinuationFetcher
+from requestor import Requestor
 
-class ContinuationRequestor:
-    BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
+class ContinuationRequestor(Requestor):
     videoId = ""
     fetcher = None
     response = None
@@ -11,7 +11,7 @@ class ContinuationRequestor:
 
     def __init__(self, videoId):
         self.videoId = videoId
-    
+        self.BASE_URL = 'https://www.youtube.com/youtubei/v1/next?'
     def buildFetcher(self):
         self.fetcher = ContinuationFetcher(self.videoId, self.playerState)
 

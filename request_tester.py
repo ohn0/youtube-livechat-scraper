@@ -55,7 +55,8 @@ def getSuccessfulSubsequentLiveChat(offset):
     subsequentRequestor.buildURL()
     subsequentLiveChatData = subsequentRequestor.getLiveChatData()
 
-    print(subsequentLiveChatData.text)
+    return subsequentLiveChatData != None
+    
 
 if not continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
     print("ContinuationFetcher testing failed. No value returned or returned value not matching expected value")
@@ -72,5 +73,7 @@ if not getSuccessfulInitialLiveChat():
 else:
     print("Calling initial live chat and parsing response good")
 
-getSuccessfulSubsequentLiveChat(300000)
-getSuccessfulSubsequentLiveChat(330000)
+if not getSuccessfulSubsequentLiveChat(300000):
+    print("call to get subsequent livechat requests failed")
+else:
+    print("Subsequent livechat caller good")
