@@ -1,13 +1,13 @@
 import requests
-
+from player_state import PlayerState
 base_url = "https://www.youtube.com/youtubei/v1/next?"
 
 class ContinuationFetcher:
     params = {}
     playerState = None
-    def __init__(self, videoId, PlayerState = None):
+    def __init__(self, videoId, pState = None):
         self.initializeParams(videoId)
-        self.playerState = PlayerState
+        self.playerState = pState
 
     def initializeParams(self, videoId):
         self.params["context"] = self.initializeContext()
@@ -28,7 +28,8 @@ class ContinuationFetcher:
         context["adSignalsInfo"] = {}
 
         if self.playerState is not None:
-            context["currentPlayerState"] = self.playerState
+            context["continuation"] = self.playerState.continuation
+            context["currentPlayerState"] = {"playerOffsetMs" : str(self.playerState.playerOffsetMs)}
         
         return context
     
