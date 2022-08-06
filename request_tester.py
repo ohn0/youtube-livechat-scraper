@@ -9,6 +9,9 @@ from player_state import PlayerState
 session = requests.Session()
 videoId = "N03T-jSJPvg"
 expectedContinuation = "op2w0wRiGlhDaWtxSndvWVZVTkpaVk5WVkU5VWEwWTVTSE0zY1ROVFIyTlBMVTkzRWd0T01ETlVMV3BUU2xCMlp4b1Q2cWpkdVFFTkNndE9NRE5VTFdwVFNsQjJaeUFCQAFyAggEeAE%3D"
+pState = PlayerState()
+pState.continuation = expectedContinuation
+
 def continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
     url = "https://www.youtube.com/youtubei/v1/next?"
     continuationFetch = ContinuationFetcher("N03T-jSJPvg")
@@ -41,11 +44,8 @@ def getSuccessfulInitialLiveChat():
                   ["liveChatTextMessageRenderer"]["message"]["runs"][0])
     return len(chatMessageList) > 0
 
-def getSuccessfulSubsequentLiveChat():
-    pState = PlayerState()
-    pState.continuation = expectedContinuation
-    pState.playerOffsetMs = 300000
-
+def getSuccessfulSubsequentLiveChat(offset):
+    pState.playerOffsetMs = offset
     requestor = ContinuationRequestor(videoId)
     requestor.updatePlayerState(pState)
     requestor.buildFetcher()
@@ -72,4 +72,5 @@ if not getSuccessfulInitialLiveChat():
 else:
     print("Calling initial live chat and parsing response good")
 
-getSuccessfulSubsequentLiveChat()
+getSuccessfulSubsequentLiveChat(300000)
+getSuccessfulSubsequentLiveChat(330000)
