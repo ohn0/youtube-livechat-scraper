@@ -1,6 +1,4 @@
-import requests
 from player_state import PlayerState
-base_url = "https://www.youtube.com/youtubei/v1/next?"
 
 class ContinuationFetcher:
     params = {}
