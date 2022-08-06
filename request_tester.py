@@ -1,8 +1,10 @@
+import pstats
 import requests
 from continuation_builder import ContinuationFetcher
 from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
+from player_state import PlayerState
 
 session = requests.Session()
 videoId = "N03T-jSJPvg"
@@ -39,6 +41,21 @@ def getSuccessfulInitialLiveChat():
                   ["liveChatTextMessageRenderer"]["message"]["runs"][0])
     return len(chatMessageList) > 0
 
+def getSuccessfulSubsequentLiveChat():
+    pState = PlayerState()
+    pState.continuation = expectedContinuation
+    pState.playerOffsetMs = 300000
+
+    requestor = ContinuationRequestor(videoId)
+    requestor.updatePlayerState(pState)
+    requestor.buildFetcher()
+    requestor.makeRequest()
+
+    subsequentRequestor = livechatRequestor(requestor.continuation)
+    subsequentRequestor.buildURL()
+    subsequentLiveChatData = subsequentRequestor.getLiveChatData()
+
+    print(subsequentLiveChatData.text)
 
 if not continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
     print("ContinuationFetcher testing failed. No value returned or returned value not matching expected value")
@@ -54,3 +71,5 @@ if not getSuccessfulInitialLiveChat():
     print("Unable to make a successful initial livechat request to youtube and successfully parse data")
 else:
     print("Calling initial live chat and parsing response good")
+
+getSuccessfulSubsequentLiveChat()

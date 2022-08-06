@@ -19,7 +19,7 @@ class ContinuationFetcher:
         self.params["playbackContext"] = {}
         self.params["captionRequested"] = False
 
-    def initializeContext(self, offsetRequest = True):
+    def initializeContext(self):
         context = {}
         context["client"] = self.initializeClient()
         context["user"]= {"lockedSafetyMode" : False}

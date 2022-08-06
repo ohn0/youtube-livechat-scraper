@@ -1,6 +1,3 @@
-from contextvars import copy_context
-
-
 class PlayerState:
     playerOffsetMs = 0
     delta = 30000
