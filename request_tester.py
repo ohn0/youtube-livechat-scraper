@@ -5,6 +5,7 @@ from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
 from player_state import PlayerState
+from subsequent_requestor import SubsequentRequestor
 
 session = requests.Session()
 videoId = "N03T-jSJPvg"
@@ -46,16 +47,13 @@ def getSuccessfulInitialLiveChat():
 
 def getSuccessfulSubsequentLiveChat(offset):
     pState.playerOffsetMs = offset
-    requestor = ContinuationRequestor(videoId)
-    requestor.updatePlayerState(pState)
+    print(pState)
+    requestor = SubsequentRequestor(videoId, pState)
     requestor.buildFetcher()
     requestor.makeRequest()
+    response = requestor.response
+    print(response)
 
-    subsequentRequestor = livechatRequestor(requestor.continuation)
-    subsequentRequestor.buildURL()
-    subsequentLiveChatData = subsequentRequestor.getLiveChatData()
-
-    return subsequentLiveChatData != None
     
 
 if not continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
