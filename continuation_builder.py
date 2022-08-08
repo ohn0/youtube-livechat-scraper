@@ -1,23 +1,26 @@
-import requests
 from player_state import PlayerState
-base_url = "https://www.youtube.com/youtubei/v1/next?"
 
 class ContinuationFetcher:
     params = {}
     playerState = None
     def __init__(self, videoId, pState = None):
-        self.initializeParams(videoId)
         self.playerState = pState
+        self.initializeParams(videoId)
 
     def initializeParams(self, videoId):
         self.params["context"] = self.initializeContext()
-        self.params["videoId"] = videoId
-        self.params["params"] = ""
-        self.params["racyCheckOk"] = False
-        self.params["contentCheckOk"] = False
-        self.params["autonavState"] = "STATE_NONE"
-        self.params["playbackContext"] = {}
-        self.params["captionRequested"] = False
+
+        if self.playerState != None:
+            self.params["continuation"] = self.playerState.continuation
+            self.params["currentPlayerState"] = {"playerOffsetMs" : str(self.playerState.playerOffsetMs)}
+        else:
+            self.params["videoId"] = videoId
+            self.params["params"] = ""
+            self.params["racyCheckOk"] = False
+            self.params["contentCheckOk"] = False
+            self.params["autonavState"] = "STATE_NONE"
+            self.params["playbackContext"] = {}
+            self.params["captionRequested"] = False
 
     def initializeContext(self):
         context = {}
@@ -27,10 +30,6 @@ class ContinuationFetcher:
         context["clickTracking"] = {}
         context["adSignalsInfo"] = {}
 
-        if self.playerState is not None:
-            context["continuation"] = self.playerState.continuation
-            context["currentPlayerState"] = {"playerOffsetMs" : str(self.playerState.playerOffsetMs)}
-        
         return context
     
     def initializeClient(self):

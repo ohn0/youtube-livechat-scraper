@@ -1,19 +1,12 @@
 import requests
 from continuation_builder import ContinuationFetcher
+from requestor import Requestor
 
-class ContinuationRequestor:
-    BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
-    videoId = ""
-    fetcher = None
-    response = None
-    continuation = None
-    playerState = None
+class ContinuationRequestor(Requestor):
 
     def __init__(self, videoId):
-        self.videoId = videoId
-    
-    def buildFetcher(self):
-        self.fetcher = ContinuationFetcher(self.videoId, self.playerState)
+        super().__init__(videoId)
+        self.BASE_URL = 'https://www.youtube.com/youtubei/v1/next?'
 
     def makeRequest(self):
         with requests.Session() as continuationFetchSession:
@@ -22,6 +15,3 @@ class ContinuationRequestor:
         
     def bindContinuation(self):
         self.continuation = self.response["contents"]["twoColumnWatchNextResults"]["conversationBar"]["liveChatRenderer"]["continuations"][0]["reloadContinuationData"]["continuation"]
-
-    def updatePlayerState(self, playerState):
-        self.playerState = playerState
