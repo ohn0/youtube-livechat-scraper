@@ -6,16 +6,19 @@ from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
 from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
+import json
 
 session = requests.Session()
 videoId = "N03T-jSJPvg"
+# videoId = "ekzLANkyras"
 expectedContinuation = "op2w0wRiGlhDaWtxSndvWVZVTkpaVk5WVkU5VWEwWTVTSE0zY1ROVFIyTlBMVTkzRWd0T01ETlVMV3BUU2xCMlp4b1Q2cWpkdVFFTkNndE9NRE5VTFdwVFNsQjJaeUFCQAFyAggEeAE%3D"
+# expectedContinuation = "op2w0wRxGlhDaWtxSndvWVZVTm5RVEpxUzFKcmNYQlpYemhsZVhOUVZYTTRjMnAzRWd0bGEzcE1RVTVyZVhKaGN4b1Q2cWpkdVFFTkNndGxhM3BNUVU1cmVYSmhjeUFCKKGL7bwKQABIA1IFIACwAQByAggEeAA%3D"
 pState = PlayerState()
 pState.continuation = expectedContinuation
 
 def continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
     url = "https://www.youtube.com/youtubei/v1/next?"
-    continuationFetch = ContinuationFetcher("N03T-jSJPvg")
+    continuationFetch = ContinuationFetcher(videoId)
     response = session.post(url, json=continuationFetch.params).json()
     continuation = response["contents"]["twoColumnWatchNextResults"]["conversationBar"]["liveChatRenderer"]["continuations"][0]["reloadContinuationData"]["continuation"]
 
@@ -39,6 +42,7 @@ def getSuccessfulInitialLiveChat():
     liveChatParser = livechatParser('html.parser')
     liveChatParser.buildParser(initialLiveChatData)
     content = liveChatParser.findContent()
+    print(liveChatParser.initialContinuation)
     chatMessageList = []
     for c in content[1::]:
         chatMessageList.append(c["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]
@@ -47,14 +51,17 @@ def getSuccessfulInitialLiveChat():
 
 def getSuccessfulSubsequentLiveChat(offset):
     pState.playerOffsetMs = offset
-    print(pState)
     requestor = SubsequentRequestor(videoId, pState)
     requestor.buildFetcher()
     requestor.makeRequest()
-    response = requestor.response
-    print(response)
+    return requestor.response
 
-    
+def printOffsets(offset):
+    jsonContent = getSuccessfulSubsequentLiveChat(300000)
+    for action in jsonContent["continuationContents"]["liveChatContinuation"]["actions"]:
+        print(action["replayChatItemAction"]["videoOffsetTimeMsec"])
+
+
 
 if not continuationBuilderBuildsRequestCorrectlyAndGetsContinuation():
     print("ContinuationFetcher testing failed. No value returned or returned value not matching expected value")
