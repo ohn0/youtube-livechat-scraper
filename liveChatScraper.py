@@ -6,15 +6,40 @@ from livechat_parser import livechatParser
 from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
 
+CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
+
 class LiveChatScraper:
     videoId = None
+    continuation = ''
+    playerState = None
+
     def __init__(self, videoUrl):
         #TODO save videoID from URL
-        return
+        self.extractVideoID(videoUrl)
 
     def extractVideoID(self, videoUrl):
-        #TODO pull out video ID
-        return 
+        keyStart = videoUrl.find('=')+1
+        keyEnd = keyStart+11
+        self.videoId = videoUrl[keyStart:keyEnd]
+
+    def getContinuation(self):
+        continuationRequestor = ContinuationRequestor(self.videoId)
+        continuationRequestor.buildFetcher()
+        continuationRequestor.makeRequest()
+
+        self.continuation = continuationRequestor.continuation
+
+    def getInitialLiveChatContents(self):
+        liveChatContents = livechatRequestor(self.continuation)
+        liveChatContents.buildURL()
+        return liveChatContents.getLiveChatData()
+
+    def parseInitialContents(self, initialContents):
+        parser = livechatParser('html.parser')
+        parser.buildParser(initialContents)
+        content = parser.findContent()
+        
+
 
     '''
         step 1: 
@@ -32,3 +57,5 @@ class LiveChatScraper:
             Use subsequent_requestor and start a loop to grab each block of livechat data. Each time a request is made, the continuation
             value MUST be update to ensure the next obtained block of data does not contain any duplicates or missed values.
     '''
+
+# scraper = LiveChatScraper('https://www.youtube.com/watch?v=EezhXfjR1_k')
