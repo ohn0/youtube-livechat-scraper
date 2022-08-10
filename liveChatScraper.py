@@ -12,6 +12,7 @@ class LiveChatScraper:
     videoId = None
     continuation = ''
     playerState = None
+    contentSet = []
 
     def __init__(self, videoUrl):
         #TODO save videoID from URL
@@ -38,7 +39,32 @@ class LiveChatScraper:
         parser = livechatParser('html.parser')
         parser.buildParser(initialContents)
         content = parser.findContent()
-        
+        self.continuation = parser.initialContinuation
+        self.playerState = PlayerState()
+        self.playerState.getNextOffset()
+        self.playerState.continuation = self.continuation
+        for c in content[1::]:
+            self.contentSet.append(c["replayChatItemAction"])
+
+    def parseSubsequentContents(self):
+        subRequestor = SubsequentRequestor(self.videoId, self.playerState)
+        subRequestor.buildFetcher()
+        subRequestor.makeRequest()
+        content = subRequestor.response
+        self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
+        for c in content:
+            self.contentSet.append(c["replayChatItemAction"])
+    
+scraper = LiveChatScraper("https://www.youtube.com/watch?v=INA6yz-x4Pk")
+scraper.getContinuation()
+contents = scraper.getInitialLiveChatContents()
+scraper.parseInitialContents(contents)
+scraper.parseSubsequentContents()
+
+for c in scraper.contentSet:
+    print(c)
+
+
 
 
     '''
