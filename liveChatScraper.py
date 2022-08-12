@@ -5,6 +5,8 @@ from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
 from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
+import json
+from types import SimpleNamespace
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -50,10 +52,11 @@ class LiveChatScraper:
         subRequestor = SubsequentRequestor(self.videoId, self.playerState)
         subRequestor.buildFetcher()
         subRequestor.makeRequest()
-        content = subRequestor.response
+        content = subRequestor.response["continuationContents"]["liveChatContinuation"]["actions"]
+        # print(content)
         self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
-        for c in content:
-            self.contentSet.append(c["replayChatItemAction"])
+        for c in content[1::]:
+            self.contentSet.append(c)
     
 scraper = LiveChatScraper("https://www.youtube.com/watch?v=INA6yz-x4Pk")
 scraper.getContinuation()

@@ -11,8 +11,8 @@ class SubsequentRequestor(Requestor):
     def makeRequest(self):
         with requests.Session() as session:
             self.response = session.post(self.BASE_URL, json=self.fetcher.params).json()
-        
+         
         # self.playerState.continuation = self.response[]
 
     def updateContinuation(self, response):
-        self.continuation = response["continuationContents"]["liveChatContinuation"]["continuations"][0]["continuation"]
+        self.continuation = response["continuationContents"]["liveChatContinuation"]["continuations"][0]["liveChatReplayContinuationData"]["continuation"]
