@@ -1,3 +1,4 @@
+from sqlite3 import Timestamp
 import requests
 from continuation_builder import ContinuationFetcher
 from continuation_requestor import ContinuationRequestor
@@ -17,6 +18,7 @@ class LiveChatScraper:
     playerState = None
     contentSet = []
     content = ''
+    currentOffsetTimeMsec = 0
 
     def __init__(self, videoUrl):
         #TODO save videoID from URL
@@ -45,11 +47,13 @@ class LiveChatScraper:
         content = parser.findContent()
         self.continuation = parser.initialContinuation
         self.playerState = PlayerState()
-        self.playerState.getNextOffset()
         self.playerState.continuation = self.continuation
         for c in content[1::]:
             self.content += str(c["replayChatItemAction"])
+            c["replayChatItemAction"]["batch"] = "INITIAL"
             self.contentSet.append(c["replayChatItemAction"])
+        self.playerState.playerOffsetMs = self.findOffsetTimeMsecFinal()
+        
 
     def parseSubsequentContents(self):
         subRequestor = SubsequentRequestor(self.videoId, self.playerState)
@@ -59,37 +63,72 @@ class LiveChatScraper:
         # print(content.text)
         self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
         for c in content:
+            c["replayChatItemAction"]["batch"] = "SUBSEQUENT"
             self.content += str(c["replayChatItemAction"])
-            self.contentSet.append(c)
+            self.contentSet.append(c["replayChatItemAction"])
+        self.playerState.playerOffsetMs = self.findOffsetTimeMsecFinal()
+
+    def findOffsetTimeMsecFinal(self):
+        finalContent = self.contentSet[-1]
+        print(finalContent["videoOffsetTimeMsec"])
+        return finalContent["videoOffsetTimeMsec"]
+
+    def outputContent(self):
+        for c in self.contentSet:
+            comment = ''
+            timestamp = ''
+            author = ''
+            # if("replayChatItemAction" in c):
+            #     c = c["replayChatItemAction"]
+            if("liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"]):
+                timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["timestampText"]["simpleText"] 
+                author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["authorName"]["simpleText"]
+                comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
+            
+            elif("emoji" in c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]):
+                timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
+                author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+                comment =  c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
+            else:
+                timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
+                author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+                comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
+                # print(c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])
+            print("({0}) {1}: {2}: {3}".format(timestamp, author, comment, c["batch"]))
     
 scraper = LiveChatScraper("https://www.youtube.com/watch?v=INA6yz-x4Pk")
 scraper.getContinuation()
 contents = scraper.getInitialLiveChatContents()
 scraper.parseInitialContents(contents)
 scraper.parseSubsequentContents()
-
+scraper.outputContent()
 
 
 # for c in scraper.contentSet:
 #     print(str(c))
 for c in scraper.contentSet:
-    # print(c)
     comment = ''
-    if("replayChatItemAction" in c):
-        c = c["replayChatItemAction"]
+    timeStamp = ''
+    author = ''
+    # if("replayChatItemAction" in c):
+    #     c = c["replayChatItemAction"]
     if("liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"]):
-        comment += c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["timestampText"]["simpleText"] 
-        comment += ": " + c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
+        timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["timestampText"]["simpleText"] 
+        author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["authorName"]["simpleText"]
+        comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
+    
     elif("emoji" in c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]):
-        comment += c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-        comment += ": " + c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
+        timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
+        author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+        comment =  c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
     else:
-        comment += c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-        comment += ": " + c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
+        timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
+        author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+        comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
         # print(c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])
-    print(comment)
-with open('v.json', 'w', encoding='utf-8') as writer:
-    writer.write(str(scraper.content))
+    # print("({0}) {1}: {2}: {3}".format(timestamp, author, comment, c["batch"]))
+# with open('v.json', 'w', encoding='utf-8') as writer:
+#     writer.write
 
 
 

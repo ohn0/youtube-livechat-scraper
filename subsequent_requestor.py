@@ -9,6 +9,7 @@ class SubsequentRequestor(Requestor):
         self.continuation = self.playerState.continuation
 
     def makeRequest(self):
+        print(self.fetcher.params)
         with requests.Session() as session:
             self.response = session.post(self.BASE_URL, json=self.fetcher.params).json()
          
