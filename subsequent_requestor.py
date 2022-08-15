@@ -2,6 +2,8 @@ import requests
 from continuation_builder import ContinuationFetcher
 from requestor import Requestor
 from player_state import PlayerState
+import json
+import time
 class SubsequentRequestor(Requestor):
     def __init__(self, videoId, pState):
         super().__init__(videoId, pState)
@@ -9,11 +11,11 @@ class SubsequentRequestor(Requestor):
         self.continuation = self.playerState.continuation
 
     def makeRequest(self):
-        print(self.fetcher.params)
         with requests.Session() as session:
             self.response = session.post(self.BASE_URL, json=self.fetcher.params).json()
-         
-        # self.playerState.continuation = self.response[]
+        # with open('subsequentContents_{0}.json'.format(time.time()), 'w', encoding='utf-8') as writer:
+        #     json.dump(self.response, writer)
 
     def updateContinuation(self, response):
         self.continuation = response["continuationContents"]["liveChatContinuation"]["continuations"][0]["liveChatReplayContinuationData"]["continuation"]
+        return self.continuation
