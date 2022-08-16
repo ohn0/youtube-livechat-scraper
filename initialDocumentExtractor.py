@@ -14,7 +14,7 @@ class initialExtractor:
         startIndex = content.find('{')
         endIndex = len(content) - content[::-1].find('}')
         jsonContents = json.loads(content[startIndex:endIndex])
-        with open ('j.json', 'w', encoding='utf-8') as writer:
+        with open ('output/initialExtractor.json', 'w', encoding='utf-8') as writer:
             writer.write(str(jsonContents))
         return jsonContents
 

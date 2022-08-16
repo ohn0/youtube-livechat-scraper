@@ -12,6 +12,7 @@ import ast
 from initialDocumentExtractor import initialExtractor
 from initialDocumentRequestor import initialDocumentRequestor
 import sys
+import time
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -23,6 +24,7 @@ class LiveChatScraper:
     contentSet = []
     content = ''
     currentOffsetTimeMsec = 0
+    initialLiveChatContents = None
 
     def __init__(self, videoUrl):
         self.videoUrl= videoUrl
@@ -50,11 +52,11 @@ class LiveChatScraper:
     def getInitialLiveChatContents(self):
         liveChatContents = livechatRequestor(self.continuation)
         liveChatContents.buildURL()
-        return liveChatContents.getLiveChatData()
+        self.initialLiveChatContents = liveChatContents.getLiveChatData()
 
-    def parseInitialContents(self, initialContents):
+    def parseInitialContents(self):
         parser = livechatParser('html.parser')
-        parser.buildParser(initialContents)
+        parser.buildParser(self.initialLiveChatContents)
         parser.findContent()
         self.playerState = PlayerState()
         self.playerState.continuation = parser.initialContinuation
@@ -99,7 +101,7 @@ class LiveChatScraper:
                     comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
                 elif("emoji" in c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]):
                     timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-                    author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+                    author = c["actions"][0]["addChatItemAction"][ "item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
                     comment =  c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
                 else:
                     timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
@@ -111,25 +113,26 @@ class LiveChatScraper:
 if(len(sys.argv) == 1):
     print("No ID provided")
     sys.exit()
+t1 = time.time()
 scraper = LiveChatScraper(sys.argv[1])
 scraper.getContinuation()
-contents = scraper.getInitialLiveChatContents()
-scraper.parseInitialContents(contents)
+scraper.getInitialLiveChatContents()
+scraper.parseInitialContents()
 scraper.parseSubsequentContents()
 endTimeMs = int(scraper.getEndTime())
-content = ''
 while(int(scraper.playerState.playerOffsetMs) < endTimeMs):
     print(scraper.playerState.playerOffsetMs)
     try:
         scraper.parseSubsequentContents()
     except Exception as e:
         print(e)
-        with open('output.txt', 'w+', encoding='utf-8') as writer:
+        with open('output/output.txt', 'w+', encoding='utf-8') as writer:
             writer.write(str(scraper.outputContent()))
 
-with open('output.txt', 'w+', encoding='utf-8') as writer:
+with open('output/output.txt', 'w+', encoding='utf-8') as writer:
     writer.writelines(scraper.outputContent())
-
+t2 = time.time()
+print('program runtime: {0}'.format(t2-t1))
 
 
 '''
