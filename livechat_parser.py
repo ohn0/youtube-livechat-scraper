@@ -1,3 +1,4 @@
+from encodings.utf_8 import encode
 from bs4 import BeautifulSoup
 import json
 
