@@ -25,7 +25,6 @@ class LiveChatScraper:
     currentOffsetTimeMsec = 0
 
     def __init__(self, videoUrl):
-        #TODO save videoID from URL
         self.videoUrl= videoUrl
         self.extractVideoID(videoUrl)
 
@@ -33,9 +32,7 @@ class LiveChatScraper:
         documentRequestor = initialDocumentRequestor()
         initialDocument = documentRequestor.getContent(self.videoUrl)
         endTimeSeeker = initialExtractor()
-        # print(str(initialDocument.text))
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
-        # return initialContent["annotations"][0]["playerAnnotationsExpandedRenderer"]["featuredChannel"]["endTimeMs"]
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -85,7 +82,6 @@ class LiveChatScraper:
             author = ''
             giftContent = False
             superChatContent = False
-            # print(c)
             if("addLiveChatTickerItemAction" in c["actions"][0] 
                or "addBannerToLiveChatCommand" in c["actions"][0] #pinned message
                or "liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #membership joined
@@ -152,5 +148,3 @@ with open('output.txt', 'w+', encoding='utf-8') as writer:
         Use subsequent_requestor and start a loop to grab each block of livechat data. Each time a request is made, the continuation
         value MUST be update to ensure the next obtained block of data does not contain any duplicates or missed values.
 '''
-
-# scraper = LiveChatScraper('https://www.youtube.com/watch?v=EezhXfjR1_k')
