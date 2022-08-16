@@ -10,10 +10,12 @@ class initialExtractor:
     def buildAndGetScript(self, data):
         parser = BeautifulSoup(data, self.parseType)
         scripts = parser.find_all('script')
-        content = str([x for x in scripts if "endTimeMs" in x.text][0])
+        content = str([x for x in scripts if "endTimestamp" in x.text][0])
         startIndex = content.find('{')
         endIndex = len(content) - content[::-1].find('}')
         jsonContents = json.loads(content[startIndex:endIndex])
+        with open ('j.json', 'w', encoding='utf-8') as writer:
+            writer.write(str(jsonContents))
         return jsonContents
 
 

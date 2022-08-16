@@ -35,7 +35,8 @@ class LiveChatScraper:
         endTimeSeeker = initialExtractor()
         # print(str(initialDocument.text))
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
-        return initialContent["annotations"][0]["playerAnnotationsExpandedRenderer"]["featuredChannel"]["endTimeMs"]
+        # return initialContent["annotations"][0]["playerAnnotationsExpandedRenderer"]["featuredChannel"]["endTimeMs"]
+        return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
         keyStart = videoUrl.find('=')+1
@@ -84,17 +85,22 @@ class LiveChatScraper:
         return finalContent["videoOffsetTimeMsec"]
 
     def outputContent(self):
+        returnSet = []
         for c in self.contentSet:
             comment = ''
             timestamp = ''
             author = ''
             giftContent = False
             superChatContent = False
+            # print(c)
             if("addLiveChatTickerItemAction" in c["actions"][0] 
-               or "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in c["actions"][0]["addChatItemAction"]["item"]  
-               or "liveChatTickerSponsorItemRenderer" in c["actions"][0]["addChatItemAction"]["item"]):
+               or "addBannerToLiveChatCommand" in c["actions"][0] #pinned message
+               or "liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #membership joined
+               or "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in c["actions"][0]["addChatItemAction"]["item"]  #gift membership purchased
+               or "liveChatTickerSponsorItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #gift message
+               ):
                 giftContent = True
-            elif("liveChatPaidMessageRenderer" in c["actions"][0]["addChatItemAction"]["item"]):
+            elif("liveChatPaidMessageRenderer" in c["actions"][0]["addChatItemAction"]["item"]): #superchat
                 superChatContent = True
 
             if not giftContent and not superChatContent:
@@ -110,8 +116,8 @@ class LiveChatScraper:
                     timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
                     author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
                     comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
-                    # print(c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])
-                print("({0}) {1}: {2}".format(timestamp, author, comment))
+                returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
+        return returnSet
     
 if(len(sys.argv) == 1):
     print("No ID provided")
@@ -122,14 +128,19 @@ contents = scraper.getInitialLiveChatContents()
 scraper.parseInitialContents(contents)
 scraper.parseSubsequentContents()
 endTimeMs = int(scraper.getEndTime())
-# print(endTimeMs)
+content = ''
 while(int(scraper.playerState.playerOffsetMs) < endTimeMs):
     print(scraper.playerState.playerOffsetMs)
-    scraper.parseSubsequentContents()
+    try:
+        scraper.parseSubsequentContents()
+    except Exception as e:
+        print(e)
+        with open('output.txt', 'w+', encoding='utf-8') as writer:
+            writer.write(str(scraper.outputContent()))
 
-with open('output.txt', 'w', encoding='utf-8') as writer:
-    writer.write(scraper.outputContent())
-# scraper.outputContent()
+with open('output.txt', 'w+', encoding='utf-8') as writer:
+    writer.writelines(scraper.outputContent())
+
 
 
 '''
