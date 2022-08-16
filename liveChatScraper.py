@@ -58,16 +58,9 @@ class LiveChatScraper:
     def parseInitialContents(self, initialContents):
         parser = livechatParser('html.parser')
         parser.buildParser(initialContents)
-        content = parser.findContent()
-        self.continuation = parser.initialContinuation
+        parser.findContent()
         self.playerState = PlayerState()
-        self.playerState.continuation = self.continuation
-        # for c in content[1::]:
-        #     self.content += str(c["replayChatItemAction"])
-        #     c["replayChatItemAction"]["batch"] = "INITIAL"
-            # self.contentSet.append(c["replayChatItemAction"])
-        # self.playerState.playerOffsetMs = 0
-        
+        self.playerState.continuation = parser.initialContinuation
 
     def parseSubsequentContents(self):
         subRequestor = SubsequentRequestor(self.videoId, self.playerState)
