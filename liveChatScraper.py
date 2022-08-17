@@ -1,18 +1,10 @@
-from sqlite3 import Timestamp
-import requests
-from continuation_builder import ContinuationFetcher
 from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
 from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
-import json
-from types import SimpleNamespace
-import ast
 from initialDocumentExtractor import initialExtractor
 from initialDocumentRequestor import initialDocumentRequestor
-import sys
-import time
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -125,16 +117,6 @@ class LiveChatScraper:
                 with open('output/output.txt', 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputContent))
         
-if(len(sys.argv) == 1):
-    print("No ID provided")
-    sys.exit()
-t1 = time.time()
-scraper = LiveChatScraper(sys.argv[1])
-scraper.scrape()
-t2 = time.time()
-print('program runtime: {0}'.format(t2-t1))
-
-
 '''
     step 1: 
         Grab initial continuation value  using continuation builder and requestors, these will require the videoId
