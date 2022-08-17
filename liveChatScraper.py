@@ -25,6 +25,7 @@ class LiveChatScraper:
     content = ''
     currentOffsetTimeMsec = 0
     initialLiveChatContents = None
+    endTime = 0
 
     def __init__(self, videoUrl):
         self.videoUrl= videoUrl
@@ -54,7 +55,7 @@ class LiveChatScraper:
         liveChatContents.buildURL()
         self.initialLiveChatContents = liveChatContents.getLiveChatData()
 
-    def parseInitialContents(self):
+    def generateInitialState(self):
         parser = livechatParser('html.parser')
         parser.buildParser(self.initialLiveChatContents)
         parser.findContent()
@@ -109,28 +110,27 @@ class LiveChatScraper:
                     comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
                 returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
         return returnSet
-    
+
+    def scrape(self):
+        self.getContinuation()
+        self.getInitialLiveChatContents()
+        self.generateInitialState()
+        self.endTime = int(self.getEndTime())
+        self.parseSubsequentContents()
+        while(int(self.playerState.playerOffsetMs) < self.endTime):
+            try:
+                self.parseSubsequentContents()
+            except Exception as e:
+                print("Exception encountered: {0}".format(str(e)))
+                with open('output/output.txt', 'w+', encoding='utf-8') as writer:
+                    writer.write(str(self.outputContent))
+        
 if(len(sys.argv) == 1):
     print("No ID provided")
     sys.exit()
 t1 = time.time()
 scraper = LiveChatScraper(sys.argv[1])
-scraper.getContinuation()
-scraper.getInitialLiveChatContents()
-scraper.parseInitialContents()
-scraper.parseSubsequentContents()
-endTimeMs = int(scraper.getEndTime())
-while(int(scraper.playerState.playerOffsetMs) < endTimeMs):
-    print(scraper.playerState.playerOffsetMs)
-    try:
-        scraper.parseSubsequentContents()
-    except Exception as e:
-        print(e)
-        with open('output/output.txt', 'w+', encoding='utf-8') as writer:
-            writer.write(str(scraper.outputContent()))
-
-with open('output/output.txt', 'w+', encoding='utf-8') as writer:
-    writer.writelines(scraper.outputContent())
+scraper.scrape()
 t2 = time.time()
 print('program runtime: {0}'.format(t2-t1))
 

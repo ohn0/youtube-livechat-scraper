@@ -21,9 +21,3 @@ class livechatParser:
         self.liveChatContents = json.loads(content[startIndex:endIndex])
         self.initialContinuation = self.liveChatContents["continuationContents"]["liveChatContinuation"]["header"]["liveChatHeaderRenderer"]["viewSelector"]["sortFilterSubMenuRenderer"]["subMenuItems"][1]["continuation"]["reloadContinuationData"]["continuation"]
         return self.liveChatContents["continuationContents"]["liveChatContinuation"]["actions"]
-
-    
-
-
-
-    

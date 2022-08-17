@@ -21,5 +21,3 @@ class livechatRequestor:
         with Session() as session:
             self.initialLiveChat = session.get(self.request_url, headers=self.headers)
         return self.initialLiveChat
-
-            
