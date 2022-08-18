@@ -11,3 +11,10 @@ class Message:
 
     def buildMessage(self):
         pass
+
+    def runsMessageBuilder(self, runs):
+        builtMessage = ''
+        for run in runs[0]:
+            builtMessage += run["text"]
+        
+        return builtMessage

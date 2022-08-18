@@ -1,6 +1,6 @@
 class Extractor:
     liveChatTickerAction =          "addLiveChatTickerItemAction"
-    bannerToLiveChatAction =        "addBannerToLiveChatCommand"
+    pinnedLiveChatAction =          "addBannerToLiveChatCommand"
     membershipJoinedAction =        "liveChatMembershipItemRenderer"
     membershipGiftPurchasedAction = "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer"
     membershipGiftRedeemed =        "liveChatTickerSponsorItemRenderer"
