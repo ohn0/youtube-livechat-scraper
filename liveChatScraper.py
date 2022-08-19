@@ -18,6 +18,7 @@ class LiveChatScraper:
     currentOffsetTimeMsec = 0
     initialLiveChatContents = None
     endTime = 0
+    VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
         self.videoUrl= videoUrl
@@ -32,7 +33,7 @@ class LiveChatScraper:
 
     def extractVideoID(self, videoUrl):
         keyStart = videoUrl.find('=')+1
-        keyEnd = keyStart+11
+        keyEnd = keyStart + self.VIDEO_ID_LENGTH
         self.videoId = videoUrl[keyStart:keyEnd]
 
     def getContinuation(self):
@@ -116,6 +117,10 @@ class LiveChatScraper:
                 print("Exception encountered: {0}".format(str(e)))
                 with open('output/output.txt', 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputContent))
+        with open('output/output.txt', 'w', encoding='utf-8') as writer:
+            returnSet = self.outputContent()
+            for r in returnSet:
+                writer.write(r)
         
 '''
     step 1: 
