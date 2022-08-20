@@ -1,5 +1,4 @@
-from sqlite3 import Timestamp
-
+from content import Content
 
 class Message:
     occurrenceTimestamp = None #time at which message was generated SINCE stream began
@@ -8,22 +7,7 @@ class Message:
     outputMessage = ''
     action = None
     contentNode = None
-    tickerItemActionNode = "addLiveChatTickerItemAction"
-    itemNode = "item"
-    liveChatTickerSponsorNode = "liveChatTickerSponsorItemRenderer"
-    detailTextNode = "detailText"
-    accessibilityNode = "accessibilityData"
-    showItemEndpointNode = "showItemEndpoint"
-    showLiveChatEndpointNode = "showLiveChatItemEndpoint"
-    rendererNode = "renderer"
-    liveChatMembershipNode = "liveChatMembershipItemRenderer"
-    timestampUsecNode = "timestampUsec"
-    timestampSimpleTextNode = "timestampText"
-    simpleTextNode = "simpleText"
-    authorNode = "authorName"
-    messageNode = "message"
-    headerSubtextNode = "headerSubtext"
-    runsNode = "runs"
+    contextMessage = None
 
     def __init__(self, action):
         self.action = action
@@ -38,5 +22,5 @@ class Message:
         
         return builtMessage
 
-    def extractContents(self):
+    def generateContent(self):
         pass

@@ -1,5 +1,6 @@
 from message import Message
-
+from content import Content
+import nodeConstants as nc
 class membershipChatMessage(Message):
     membershipDurationHeader = ''
     MESSAGE_TYPES = {"chatMessage": "MEMBERSHIP_CHAT", 
@@ -9,25 +10,27 @@ class membershipChatMessage(Message):
         super().__init__(chatAction)
 
     def findMembershipMessageType(self):
-        if(self.accessibilityNode in self.action[self.tickerItemActionNode][self.itemNode][self.liveChatTickerSponsorNode][self.detailTextNode]):
+        if(self.accessibilityNode in self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
             self.MESSAGE_TYPE = self.MESSAGE_TYPES["chatMessage"]
-        elif(self.runsNode in self.action[self.tickerItemActionNode][self.itemNode][self.liveChatTickerSponsorNode][self.detailTextNode]):
+        elif(self.runsNode in self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
             self.MESSAGE_TYPE = self.MESSAGE_TYPES["joinMessage"]
 
     def extractContents(self):
-        self.contentNode = self.action[self.tickerItemActionNode][self.itemNode][self.liveChatTickerSponsorNode]
-        self.occurrenceTimestamp = self.contentNode[self.showItemEndpointNode][self.showLiveChatEndpointNode][self.liveChatMembershipNode][self.timestampSimpleTextNode][self.simpleTextNode]
-        self.timeStamp = self.contentNode[self.showItemEndpointNode][self.showLiveChatEndpointNode][self.liveChatMembershipNode][self.timestampUsecNode]
-        self.author = self.contentNode[self.showItemEndpointNode][self.showLiveChatEndpointNode][self.liveChatMembershipNode][self.authorNode][self.simpleTextNode]
-        membershipContextMessage = self.extractMembershipContextMessage()
-        self.outputMessage = 
+        self.contentNode = self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode]
+        self.occurrenceTimestamp = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
+        self.timeStamp = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.timestampUsecNode]
+        self.author = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.authorNode][nc.simpleTextNode]
+        self.contextMessage = self.extractMembershipContextMessage()
 
     def extractMembershipContextMessage(self):
         contextOutput = ''
         if(self.MESSAGE_TYPE == self.MESSAGE_TYPES["chatMessage"]):
-            contextOutput = self.runsMessageBuilder(self.contentNode[self.showItemEndpointNode][self.showLiveChatEndpointNode][self.rendererNode][self.liveChatMembershipNode][self.messageNode][self.runsNode])
+            contextOutput = self.runsMessageBuilder(self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.rendererNode][nc.liveChatMembershipNode][nc.messageNode][nc.runsNode])
         elif(self.MESSAGE_TYPE == self.MESSAGE_TYPES["joinMessage"]):
-            contextOutput = self.runsMessageBuilder(self.contentNode[self.showItemEndpointNode][self.showLiveChatEndpointNode][self.rendererNode][self.liveChatMembershipNode][self.headerSubtextNode][self.runsNode])
+            contextOutput = self.runsMessageBuilder(self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.rendererNode][nc.liveChatMembershipNode][nc.headerSubtextNode][nc.runsNode])
         else:
             contextOutput = "Unrecognized MESSAGE_TYPE"
         return contextOutput
+
+    def generateContent(self):
+        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage)
