@@ -10,13 +10,13 @@ class membershipChatMessage(Message):
         super().__init__(chatAction)
 
     def findMembershipMessageType(self):
-        if(self.accessibilityNode in self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
+        if(self.accessibilityNode in self.action[nc.replayActionNode][nc.actionsNode][0][nc.itemNode][nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
             self.MESSAGE_TYPE = self.MESSAGE_TYPES["chatMessage"]
-        elif(self.runsNode in self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
+        elif(self.runsNode in self.action[nc.replayActionNode][nc.actionsNode][0][nc.itemNode][nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode][nc.detailTextNode]):
             self.MESSAGE_TYPE = self.MESSAGE_TYPES["joinMessage"]
 
-    def extractContents(self):
-        self.contentNode = self.action[nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode]
+    def buildMessage(self):
+        self.contentNode = self.action[nc.replayActionNode][nc.actionsNode][0][nc.itemNode][nc.tickerItemActionNode][nc.itemNode][nc.liveChatTickerSponsorNode]
         self.occurrenceTimestamp = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
         self.timeStamp = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.timestampUsecNode]
         self.author = self.contentNode[nc.showItemEndpointNode][nc.showLiveChatEndpointNode][nc.liveChatMembershipNode][nc.authorNode][nc.simpleTextNode]
