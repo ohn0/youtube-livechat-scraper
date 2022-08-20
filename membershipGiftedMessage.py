@@ -8,11 +8,12 @@ class membershipGiftedMessage(Message):
 
     def buildMessage(self):
         self.contentNode = self.action[nc.replayActionNode][nc.actionsNode][0]
-        self.timeStamp = self.contentNode[nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipGiftPurchasedAnnouncementNode][nc.timestampUsecNode]
+        [nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipGiftPurchasedAnnouncementNode]
+        self.timeStamp = self.contentNode[nc.timestampUsecNode]
         self.occurrenceTimestamp = self.action[nc.replayActionNode][nc.videoOffsetTimeMsecNode]
-        self.author = self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipGiftPurchasedAnnouncementNode][nc.headerNode][nc.liveChatSponsorshipHeaderNode][nc.authorNode][nc.simpleTextNode]
+        self.author = self.action[nc.headerNode][nc.liveChatSponsorshipHeaderNode][nc.authorNode][nc.simpleTextNode]
         self.contextMessage = {
-            "Gift Text" : self.runsMessageBuilder(self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipGiftPurchasedAnnouncementNode][nc.headerNode][nc.primaryTextNode]),
+            "Gift Text" : self.runsMessageBuilder(self.action[nc.headerNode][nc.primaryTextNode]),
         }
 
     def generateContent(self):
