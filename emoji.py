@@ -8,5 +8,8 @@ class Emoji:
 
     def setProperties(self, emoji):
         self.name = emoji[nc.imageNode][nc.accessibilityNode][nc.accessibilityDataNode][nc.labelNode]
-        self.isCustom = emoji[nc.customEmojiNode] == "true"
-        self.imageUrl = emoji[nc.imageNode][nc.thumbnailNode][1][nc.urlNode]
+        self.isCustom = nc.customEmojiNode in emoji 
+        if(self.isCustom):
+            self.imageUrl = emoji[nc.imageNode][nc.thumbnailNode][1][nc.urlNode]
+        else:
+            self.imageUrl = emoji[nc.imageNode][nc.thumbnailNode][0][nc.urlNode]

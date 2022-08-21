@@ -10,7 +10,6 @@ class membershipChatMessage(Message):
         super().__init__(chatAction)
 
     def findMembershipMessageType(self):
-        print(self.action)
         tooltip = self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.authorBadgeNode][0][nc.livechatAuthorBadgeNode][nc.tooltipNode]
         if(tooltip == "New member"):
             self.MESSAGE_TYPE = self.MESSAGE_TYPES["joinMessage"]
