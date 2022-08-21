@@ -27,18 +27,20 @@ class LiveChatScraper:
     initialLiveChatContents = None
     endTime = 0
     videoTitle = ''
+    outputFileName = ''
     VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
         self.videoUrl= videoUrl
         self.extractVideoID(videoUrl)
 
-    def getEndTime(self):
+    def setInitialParameters(self):
         documentRequestor = initialDocumentRequestor()
         initialDocument = documentRequestor.getContent(self.videoUrl)
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
         self.videoTitle = initialContent["videoDetails"]["title"]
+        self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -146,16 +148,16 @@ class LiveChatScraper:
         self.getContinuation()
         self.getInitialLiveChatContents()
         self.generateInitialState()
-        self.endTime = int(self.getEndTime())
+        self.endTime = int(self.setInitialParameters())
         self.parseSubsequentContents()
         while(int(self.playerState.playerOffsetMs) < self.endTime):
             try:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w+', encoding='utf-8') as writer:
+                with open('output/'+self.outputFileName, 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w', encoding='utf-8') as writer:
+        with open('output/'+self.outputFileName, 'w', encoding='utf-8') as writer:
             returnSet = self.outputMessages()
             for r in returnSet:
                 writer.write(r)
@@ -164,25 +166,24 @@ class LiveChatScraper:
         self.getContinuation()
         self.getInitialLiveChatContents()
         self.generateInitialState()
-        self.endTime = int(self.getEndTime())
+        self.endTime = int(self.setInitialParameters())
         self.parseSubsequentContents()
         while(int(self.playerState.playerOffsetMs) < self.endTime):
             try:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w+', encoding='utf-8') as writer:
+                with open('output/'+self.outputFileName, 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
-            writer.write(json.dumps(self.contentSet))
+        self.writeContentToFile(json.dumps(self.contentSet))
 
     def outputContentFromScrapedFile(self, filename):
-        with open(f'output/{filename}', 'r', encoding='utf-8') as reader:
+        with open('output/'+self.outputFileName, 'r', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
         return self.outputMessages()
 
     def writeContentToFile(self, scrapedContent):
-        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
+        with open('output/'+self.outputFileName, 'w', encoding='utf-8') as writer:
             writer.write(scrapedContent)
         
 '''
