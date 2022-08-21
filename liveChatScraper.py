@@ -1,3 +1,4 @@
+import nodeConstants as nc
 from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
@@ -5,6 +6,11 @@ from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
 from initialDocumentExtractor import initialExtractor
 from initialDocumentRequestor import initialDocumentRequestor
+from PinnedMessage import PinnedMessage
+from superchatMessage import superchatMessage
+from membershipmessage import membershipChatMessage
+from membershipGiftedMessage import membershipGiftedMessage
+from chatMessage import chatMessage
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -104,6 +110,32 @@ class LiveChatScraper:
                 returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
         return returnSet
 
+    def outputMessages(self):
+        messages = []
+        for c in self.contentSet:
+            payload = c["actions"][0]
+            if(nc.addBannerNode in payload):
+                pinnedMessage = PinnedMessage(payload)
+                pinnedMessage.buildMessage()
+                messages.append(pinnedMessage.generateContent())
+            elif(nc.liveChatPaidMessageNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                superchat = superchatMessage(payload)
+                superchat.buildMessage()
+                messages.append(superchat.generateContent())
+            elif(nc.liveChatMembershipNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                membership = membershipChatMessage(payload)
+                membership.buildMessage()
+                messages.append(membership.generateContent())
+            elif(nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.replayActionNode][nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]):
+                membershipGift = membershipGiftedMessage(payload)
+                membershipGift.buildMessage()
+                messages.append(membershipGift.generateContent())
+            elif(nc.liveChatTextMessageRendererNode in payload[nc.replayActionNode][nc.itemNode][0][nc.addChatItemActionNode][nc.itemNode]):
+                chat = chatMessage(payload)
+                chat.buildMessage()
+                messages.append(chat.generateContent())
+        return messages
+
     def scrape(self):
         self.getContinuation()
         self.getInitialLiveChatContents()
@@ -116,9 +148,9 @@ class LiveChatScraper:
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
                 with open('output/output.txt', 'w+', encoding='utf-8') as writer:
-                    writer.write(str(self.outputContent))
+                    writer.write(str(self.outputMessages))
         with open('output/output.txt', 'w', encoding='utf-8') as writer:
-            returnSet = self.outputContent()
+            returnSet = self.outputMessages()
             for r in returnSet:
                 writer.write(r)
         
