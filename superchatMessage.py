@@ -16,3 +16,11 @@ class superchatMessage(Message):
             "purchase amount" : livechatNode[nc.purchaseAmountNode],
             "message" : self.runsMessageBuilder(livechatNode[nc.messageNode][nc.runsNode])
         }
+
+    def generateContent(self):
+        return Content(
+            self.occurrenceTimestamp,
+            self.timeStamp,
+            self.author,
+            self.contextMessage
+        )

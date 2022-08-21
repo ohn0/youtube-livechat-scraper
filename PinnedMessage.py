@@ -16,8 +16,8 @@ class PinnedMessage(Message):
         self.timeStamp = content[nc.timestampSimpleTextNode][nc.simpleTextNode]
         runsContent = header[nc.bannerHeaderRendererNode][nc.textNode]
         self.contextMessage = {
-                "pinned By Message" : self.runsMessageBuilder(runsContent),
-                "pinned message" : content[nc.messageNode][nc.runsNode][0][nc.textNode]
+                "pinnedBy" : self.runsMessageBuilder(runsContent),
+                "message" : content[nc.messageNode][nc.runsNode][0][nc.textNode]
         }
     def generateContent(self):
         return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage)

@@ -19,7 +19,6 @@ class Message:
         builtMessage = ''
         for run in runs[0]:
             builtMessage += run["text"]
-        
         return builtMessage
 
     def generateContent(self):
