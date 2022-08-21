@@ -1,17 +1,18 @@
-from sqlite3 import Timestamp
-import requests
-from continuation_builder import ContinuationFetcher
+import nodeConstants as nc
 from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
 from player_state import PlayerState
 from subsequent_requestor import SubsequentRequestor
-import json
-from types import SimpleNamespace
-import ast
 from initialDocumentExtractor import initialExtractor
 from initialDocumentRequestor import initialDocumentRequestor
-import sys
+from PinnedMessage import PinnedMessage
+from superchatMessage import superchatMessage
+from membershipmessage import membershipChatMessage
+from membershipGiftedMessage import membershipGiftedMessage
+from chatMessage import chatMessage
+import json
+import time
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -23,9 +24,12 @@ class LiveChatScraper:
     contentSet = []
     content = ''
     currentOffsetTimeMsec = 0
+    initialLiveChatContents = None
+    endTime = 0
+    videoTitle = ''
+    VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
-        #TODO save videoID from URL
         self.videoUrl= videoUrl
         self.extractVideoID(videoUrl)
 
@@ -33,14 +37,13 @@ class LiveChatScraper:
         documentRequestor = initialDocumentRequestor()
         initialDocument = documentRequestor.getContent(self.videoUrl)
         endTimeSeeker = initialExtractor()
-        # print(str(initialDocument.text))
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
-        # return initialContent["annotations"][0]["playerAnnotationsExpandedRenderer"]["featuredChannel"]["endTimeMs"]
+        self.videoTitle = initialContent["videoDetails"]["title"]
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
         keyStart = videoUrl.find('=')+1
-        keyEnd = keyStart+11
+        keyEnd = keyStart + self.VIDEO_ID_LENGTH
         self.videoId = videoUrl[keyStart:keyEnd]
 
     def getContinuation(self):
@@ -53,11 +56,11 @@ class LiveChatScraper:
     def getInitialLiveChatContents(self):
         liveChatContents = livechatRequestor(self.continuation)
         liveChatContents.buildURL()
-        return liveChatContents.getLiveChatData()
+        self.initialLiveChatContents = liveChatContents.getLiveChatData()
 
-    def parseInitialContents(self, initialContents):
+    def generateInitialState(self):
         parser = livechatParser('html.parser')
-        parser.buildParser(initialContents)
+        parser.buildParser(self.initialLiveChatContents)
         parser.findContent()
         self.playerState = PlayerState()
         self.playerState.continuation = parser.initialContinuation
@@ -85,7 +88,6 @@ class LiveChatScraper:
             author = ''
             giftContent = False
             superChatContent = False
-            # print(c)
             if("addLiveChatTickerItemAction" in c["actions"][0] 
                or "addBannerToLiveChatCommand" in c["actions"][0] #pinned message
                or "liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #membership joined
@@ -103,7 +105,7 @@ class LiveChatScraper:
                     comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
                 elif("emoji" in c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]):
                     timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-                    author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
+                    author = c["actions"][0]["addChatItemAction"][ "item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
                     comment =  c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
                 else:
                     timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
@@ -111,31 +113,78 @@ class LiveChatScraper:
                     comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
                 returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
         return returnSet
-    
-if(len(sys.argv) == 1):
-    print("No ID provided")
-    sys.exit()
-scraper = LiveChatScraper(sys.argv[1])
-scraper.getContinuation()
-contents = scraper.getInitialLiveChatContents()
-scraper.parseInitialContents(contents)
-scraper.parseSubsequentContents()
-endTimeMs = int(scraper.getEndTime())
-content = ''
-while(int(scraper.playerState.playerOffsetMs) < endTimeMs):
-    print(scraper.playerState.playerOffsetMs)
-    try:
-        scraper.parseSubsequentContents()
-    except Exception as e:
-        print(e)
-        with open('output.txt', 'w+', encoding='utf-8') as writer:
-            writer.write(str(scraper.outputContent()))
 
-with open('output.txt', 'w+', encoding='utf-8') as writer:
-    writer.writelines(scraper.outputContent())
+    def outputMessages(self):
+        messages = []
+        for c in self.contentSet:
+            payload = c["actions"][0]
+            if(nc.tickerItemActionNode in payload):
+                pass
+            elif(nc.addBannerNode in payload):
+                pinnedMessage = PinnedMessage(payload)
+                pinnedMessage.buildMessage()
+                messages.append(pinnedMessage.generateContent())
+            elif(nc.liveChatPaidMessageNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                superchat = superchatMessage(payload)
+                superchat.buildMessage()
+                messages.append(superchat.generateContent())
+            elif(nc.liveChatMembershipNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                membership = membershipChatMessage(payload)
+                membership.buildMessage()
+                messages.append(membership.generateContent())
+            elif(nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                membershipGift = membershipGiftedMessage(payload)
+                membershipGift.buildMessage()
+                messages.append(membershipGift.generateContent())
+            elif(nc.liveChatTextMessageRendererNode in payload[nc.addChatItemActionNode][nc.itemNode]):
+                chat = chatMessage(payload)
+                chat.buildMessage()
+                messages.append(chat.generateContent())
+        return messages
 
+    def scrape(self):
+        self.getContinuation()
+        self.getInitialLiveChatContents()
+        self.generateInitialState()
+        self.endTime = int(self.getEndTime())
+        self.parseSubsequentContents()
+        while(int(self.playerState.playerOffsetMs) < self.endTime):
+            try:
+                self.parseSubsequentContents()
+            except Exception as e:
+                print("Exception encountered: {0}".format(str(e)))
+                with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w+', encoding='utf-8') as writer:
+                    writer.write(str(self.outputMessages))
+        with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w', encoding='utf-8') as writer:
+            returnSet = self.outputMessages()
+            for r in returnSet:
+                writer.write(r)
 
+    def scrapeToFile(self):
+        self.getContinuation()
+        self.getInitialLiveChatContents()
+        self.generateInitialState()
+        self.endTime = int(self.getEndTime())
+        self.parseSubsequentContents()
+        while(int(self.playerState.playerOffsetMs) < self.endTime):
+            try:
+                self.parseSubsequentContents()
+            except Exception as e:
+                print("Exception encountered: {0}".format(str(e)))
+                with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w+', encoding='utf-8') as writer:
+                    writer.write(str(self.outputMessages))
+        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
+            writer.write(json.dumps(self.contentSet))
 
+    def outputContentFromScrapedFile(self, filename):
+        with open(f'output/{filename}', 'r', encoding='utf-8') as reader:
+            self.contentSet = json.load(reader)
+        return self.outputMessages()
+
+    def writeContentToFile(self, scrapedContent):
+        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
+            writer.write(scrapedContent)
+        
 '''
     step 1: 
         Grab initial continuation value  using continuation builder and requestors, these will require the videoId
@@ -152,5 +201,3 @@ with open('output.txt', 'w+', encoding='utf-8') as writer:
         Use subsequent_requestor and start a loop to grab each block of livechat data. Each time a request is made, the continuation
         value MUST be update to ensure the next obtained block of data does not contain any duplicates or missed values.
 '''
-
-# scraper = LiveChatScraper('https://www.youtube.com/watch?v=EezhXfjR1_k')

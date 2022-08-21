@@ -13,7 +13,7 @@ class SubsequentRequestor(Requestor):
     def makeRequest(self):
         with requests.Session() as session:
             self.response = session.post(self.BASE_URL, json=self.fetcher.params).json()
-        # with open('subsequentContents_{0}.json'.format(time.time()), 'w', encoding='utf-8') as writer:
+        # with open('output/subsequentContents_{0}.json'.format(time.time()), 'w', encoding='utf-8') as writer:
         #     json.dump(self.response, writer)
 
     def updateContinuation(self, response):
