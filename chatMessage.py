@@ -7,10 +7,10 @@ class chatMessage(Message):
         super().__init__(action)
 
     def buildMessage(self):
-        self.occurrenceTimestamp = self.action[nc.replayActionNode][nc.videoOffsetTimeMsecNode]
         self.contentNode = self.action[nc.replayActionNode][nc.actionsNode][0]
         [nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode]
-        self.timeStamp = self.contentNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
+        self.occurrenceTimestamp = self.contentNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
+        self.timeStamp = self.contentNode[nc.timestampUsecNode]
         self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
         self.contextMessage = {
             "message" : self.contentNode[nc.messageNode][nc.runsNode][0][nc.textNode],

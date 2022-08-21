@@ -7,13 +7,13 @@ class PinnedMessage(Message):
         super().__init__(action)
 
     def buildMessage(self):
-        self.contentNode = self.action[nc.replayActionNode][nc.actionsNode][0][nc.addBannerNode]
+        self.contentNode = self.action[nc.addBannerNode]
         content = self.contentNode[nc.addBannerNode][nc.bannerRendererNode]
         [nc.liveChatBannerRendererNode][nc.contentNode][nc.liveChatTextMessageRendererNode]
         header = self.contentNode[nc.addBannerNode][nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.headerNode]
-        self.occurrenceTimestamp = self.action[nc.replayActionNode][nc.videoOffsetTimeMsecNode]
+        self.timeStamp = content[nc.timestampUsecNode]
         self.author = ''
-        self.timeStamp = content[nc.timestampSimpleTextNode][nc.simpleTextNode]
+        self.occurrenceTimestamp = content[nc.timestampSimpleTextNode][nc.simpleTextNode]
         runsContent = header[nc.bannerHeaderRendererNode][nc.textNode]
         self.contextMessage = {
                 "pinnedBy" : self.runsMessageBuilder(runsContent),

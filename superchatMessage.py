@@ -7,14 +7,13 @@ class superchatMessage(Message):
         super().__init__(action)
 
     def buildMessage(self):
-        self.contentNode = self.action[nc.replayActionNode][nc.actionsNode][0]
-        livechatNode = self.contentNode[nc.addChatItemActionNode][nc.itemNode][nc.liveChatPaidMessageNode]
-        self.occurrenceTimestamp = livechatNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
-        self.timeStamp = livechatNode[nc.timestampUsecNode]
-        self.author = livechatNode[nc.authorNode][nc.simpleTextNode]
+        self.contentNode = self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatPaidMessageNode]
+        self.occurrenceTimestamp = self.contentNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
+        self.timeStamp = self.contentNode[nc.timestampUsecNode]
+        self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
         self.contextMessage = {
-            "purchase amount" : livechatNode[nc.purchaseAmountNode],
-            "message" : self.runsMessageBuilder(livechatNode[nc.messageNode][nc.runsNode])
+            "purchase amount" : self.contentNode[nc.purchaseAmountNode],
+            "message" : self.runsMessageBuilder(self.contentNode[nc.messageNode][nc.runsNode])
         }
 
     def generateContent(self):

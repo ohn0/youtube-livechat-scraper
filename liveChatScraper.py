@@ -11,6 +11,8 @@ from superchatMessage import superchatMessage
 from membershipmessage import membershipChatMessage
 from membershipGiftedMessage import membershipGiftedMessage
 from chatMessage import chatMessage
+import json
+import time
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -114,26 +116,33 @@ class LiveChatScraper:
         messages = []
         for c in self.contentSet:
             payload = c["actions"][0]
-            if(nc.addBannerNode in payload):
+            if(nc.tickerItemActionNode in payload):
+                pass
+            elif(nc.addBannerNode in payload):
                 pinnedMessage = PinnedMessage(payload)
                 pinnedMessage.buildMessage()
                 messages.append(pinnedMessage.generateContent())
+                print("pinned message")
             elif(nc.liveChatPaidMessageNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 superchat = superchatMessage(payload)
                 superchat.buildMessage()
                 messages.append(superchat.generateContent())
+                print("superchat message")
             elif(nc.liveChatMembershipNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 membership = membershipChatMessage(payload)
                 membership.buildMessage()
                 messages.append(membership.generateContent())
-            elif(nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.replayActionNode][nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]):
+                print("membership message added")
+            elif(nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 membershipGift = membershipGiftedMessage(payload)
                 membershipGift.buildMessage()
                 messages.append(membershipGift.generateContent())
-            elif(nc.liveChatTextMessageRendererNode in payload[nc.replayActionNode][nc.itemNode][0][nc.addChatItemActionNode][nc.itemNode]):
+                print("gift purchased")
+            elif(nc.liveChatTextMessageRendererNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 chat = chatMessage(payload)
                 chat.buildMessage()
                 messages.append(chat.generateContent())
+                print("chat message")
         return messages
 
     def scrape(self):
@@ -153,6 +162,28 @@ class LiveChatScraper:
             returnSet = self.outputMessages()
             for r in returnSet:
                 writer.write(r)
+
+    def scrapeToFile(self):
+        self.getContinuation()
+        self.getInitialLiveChatContents()
+        self.generateInitialState()
+        self.endTime = int(self.getEndTime())
+        self.parseSubsequentContents()
+        while(int(self.playerState.playerOffsetMs) < self.endTime):
+            try:
+                self.parseSubsequentContents()
+            except Exception as e:
+                print("Exception encountered: {0}".format(str(e)))
+                with open('output/output.txt', 'w+', encoding='utf-8') as writer:
+                    writer.write(str(self.outputMessages))
+        with open(f'output/scrape_{time.time()}.json', 'w', encoding='utf-8') as writer:
+            writer.write(json.dumps(self.contentSet))
+
+    def outputContentFromScrapedFile(self, filename):
+        with open(f'output/{filename}', 'r', encoding='utf-8') as reader:
+            self.contentSet = json.load(reader)
+        
+        self.outputMessages()
         
 '''
     step 1: 

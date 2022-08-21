@@ -8,6 +8,7 @@ if(len(sys.argv) == 1):
     sys.exit()
 videoUrl = sys.argv[1]
 scraper = LiveChatScraper(videoUrl)
-scraper.scrape()
+# scraper.scrapeToFile()
+scraper.outputContentFromScrapedFile('scrape_1661086761.3118222.json')
 endTime = time.time()
 print(f'program runtime: {endTime - startTime}')
