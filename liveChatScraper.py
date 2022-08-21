@@ -178,7 +178,7 @@ class LiveChatScraper:
         with open(f'output/{filename}', 'r', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
         
-        self.outputMessages()
+        return self.outputMessages()
         
 '''
     step 1: 

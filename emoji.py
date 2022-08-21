@@ -13,3 +13,10 @@ class Emoji:
             self.imageUrl = emoji[nc.imageNode][nc.thumbnailNode][1][nc.urlNode]
         else:
             self.imageUrl = emoji[nc.imageNode][nc.thumbnailNode][0][nc.urlNode]
+
+    def getContent(self):
+        return {
+            "name" : self.name,
+            "isCustom" : self.isCustom,
+            "imageUrl" : self.imageUrl
+        }

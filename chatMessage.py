@@ -22,7 +22,7 @@ class chatMessage(Message):
         emojis = []
         for run in runs:
             if("emoji" in run):
-                emojis.append(json.JSONEncoder(default= lambda e: {"name" : e.name, "isCustom" : e.isCustom, "imageUrl" : e.imageUrl}).encode(Emoji(run[nc.emojiNode])))
+                emojis.append(Emoji(run[nc.emojiNode]).getContent())
         return emojis
 
     def extractText(self, runs):
