@@ -26,6 +26,7 @@ class LiveChatScraper:
     currentOffsetTimeMsec = 0
     initialLiveChatContents = None
     endTime = 0
+    videoTitle = ''
     VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
@@ -37,6 +38,7 @@ class LiveChatScraper:
         initialDocument = documentRequestor.getContent(self.videoUrl)
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
+        self.videoTitle = initialContent["videoDetails"]["title"]
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -151,9 +153,9 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open('output/output.txt', 'w+', encoding='utf-8') as writer:
+                with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with open('output/output.txt', 'w', encoding='utf-8') as writer:
+        with open(f"output/{self.videoTitle}_{time.time()}_scrape.json", 'w', encoding='utf-8') as writer:
             returnSet = self.outputMessages()
             for r in returnSet:
                 writer.write(r)
@@ -169,16 +171,19 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open('output/output.txt', 'w+', encoding='utf-8') as writer:
+                with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with open(f'output/scrape_{time.time()}.json', 'w', encoding='utf-8') as writer:
+        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
             writer.write(json.dumps(self.contentSet))
 
     def outputContentFromScrapedFile(self, filename):
         with open(f'output/{filename}', 'r', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
-        
         return self.outputMessages()
+
+    def writeContentToFile(self, scrapedContent):
+        with open(f'output/{self.videoTitle}_{time.time()}_scrape.json', 'w', encoding='utf-8') as writer:
+            writer.write(scrapedContent)
         
 '''
     step 1: 

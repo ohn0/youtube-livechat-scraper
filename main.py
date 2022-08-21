@@ -10,8 +10,7 @@ if(len(sys.argv) == 1):
 videoUrl = sys.argv[1]
 scraper = LiveChatScraper(videoUrl)
 # scraper.scrapeToFile()
-output = scraper.outputContentFromScrapedFile('scrape_1661086761.3118222.json')
-with open('output/chat_output.json', 'w', encoding='utf-8') as writer:
-    writer.write(json.dumps(output))
+scrapedContent = scraper.outputContentFromScrapedFile('scrape_1661086761.3118222.json')
+scraper.writeContentToFile(json.dumps(scrapedContent))
 endTime = time.time()
 print(f'program runtime: {endTime - startTime}')
