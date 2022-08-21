@@ -1,6 +1,8 @@
+from content import Content
 from message import Message
 from emoji import Emoji
 import nodeConstants as nc
+import json
 
 class chatMessage(Message):
     def __init__(self, action):
@@ -20,14 +22,15 @@ class chatMessage(Message):
         emojis = []
         for run in runs:
             if("emoji" in run):
-                emojis.append(Emoji(run[nc.emojiNode]))
+                emojis.append(json.JSONEncoder(default= lambda e: {"name" : e.name, "isCustom" : e.isCustom, "imageUrl" : e.imageUrl}).encode(Emoji(run[nc.emojiNode])))
         return emojis
 
     def extractText(self, runs):
         text = ''
         for run in runs:
             if("text" in run):
-                print(runs)
                 text += run["text"]
         return text
         
+    def generateContent(self):
+        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage).objectOutput()

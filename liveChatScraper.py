@@ -122,27 +122,22 @@ class LiveChatScraper:
                 pinnedMessage = PinnedMessage(payload)
                 pinnedMessage.buildMessage()
                 messages.append(pinnedMessage.generateContent())
-                print("pinned message")
             elif(nc.liveChatPaidMessageNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 superchat = superchatMessage(payload)
                 superchat.buildMessage()
                 messages.append(superchat.generateContent())
-                print("superchat message")
             elif(nc.liveChatMembershipNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 membership = membershipChatMessage(payload)
                 membership.buildMessage()
                 messages.append(membership.generateContent())
-                print("membership message added")
             elif(nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 membershipGift = membershipGiftedMessage(payload)
                 membershipGift.buildMessage()
                 messages.append(membershipGift.generateContent())
-                print("gift purchased")
             elif(nc.liveChatTextMessageRendererNode in payload[nc.addChatItemActionNode][nc.itemNode]):
                 chat = chatMessage(payload)
                 chat.buildMessage()
                 messages.append(chat.generateContent())
-                print("chat message")
         return messages
 
     def scrape(self):
