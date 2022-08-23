@@ -27,7 +27,7 @@ class LiveChatScraper:
     initialLiveChatContents = None
     endTime = 0
     videoTitle = ''
-    outputFileName = ''
+    outputFileName = 'output/outputContent.json'
     VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
@@ -40,7 +40,7 @@ class LiveChatScraper:
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
         self.videoTitle = initialContent["videoDetails"]["title"]
-        self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
+        self.outputFileName = f'output/{self.videoTitle}_{time.time()}.json'
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -71,7 +71,10 @@ class LiveChatScraper:
         subRequestor = SubsequentRequestor(self.videoId, self.playerState)
         subRequestor.buildFetcher()
         subRequestor.makeRequest()
-        content = subRequestor.response["continuationContents"]["liveChatContinuation"]["actions"][1::]
+        try:
+            content = subRequestor.response["continuationContents"]["liveChatContinuation"]["actions"][1::]
+        except KeyError:
+            print(subRequestor.response)
         self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
         for c in content:
             self.content += str(c["replayChatItemAction"])
@@ -155,14 +158,14 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open('output/'+self.outputFileName, 'w+', encoding='utf-8') as writer:
+                with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with open('output/'+self.outputFileName, 'w', encoding='utf-8') as writer:
+        with open(self.outputFileName, 'w', encoding='utf-8') as writer:
             returnSet = self.outputMessages()
             for r in returnSet:
                 writer.write(r)
 
-    def scrapeToFile(self):
+    def scrapeToFile(self, cleanData = False):
         self.getContinuation()
         self.getInitialLiveChatContents()
         self.generateInitialState()
@@ -173,20 +176,37 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open('output/'+self.outputFileName, 'w+', encoding='utf-8') as writer:
+                with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        self.writeContentToFile(json.dumps(self.contentSet))
+        with(open('output/raw_output.json', 'w', encoding='utf-8')) as writer:
+            writer.write(json.dumps(self.contentSet))
+        output = self.outputMessages()
+        if(cleanData):
+            self.generateCleanDataset(output)
+        else:
+            self.writeContentToFile(json.dumps(output))
 
     def outputContentFromScrapedFile(self, filename):
-        with open('output/'+self.outputFileName, 'r', encoding='utf-8') as reader:
+        with open("output/"+filename, 'r+', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
         return self.outputMessages()
 
     def writeContentToFile(self, scrapedContent):
-        with open('output/'+self.outputFileName, 'w', encoding='utf-8') as writer:
+        with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
             writer.write(scrapedContent)
-        
-'''
+    
+    def generateCleanDataset(self, dataset):
+        resultSet = []
+        with open("output/cleaned_"+self.videoTitle+".txt", 'w', encoding='utf-8') as writer:
+            for content in dataset:
+                if("message" in content["content"]):
+                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["message"]}\n')
+                elif("membershipChat" in content["content"]):
+                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["membershipChat"]}\n')
+            writer.writelines(resultSet)    
+
+
+'''                 
     step 1: 
         Grab initial continuation value  using continuation builder and requestors, these will require the videoId
     

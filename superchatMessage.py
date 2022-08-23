@@ -13,7 +13,7 @@ class superchatMessage(Message):
         self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
         self.contextMessage = {
             "purchaseAmount" : self.contentNode[nc.purchaseAmountNode],
-            "message" : self.runsMessageBuilder(self.contentNode[nc.messageNode][nc.runsNode])
+            "message" : self.runsMessageBuilder(self.contentNode[nc.messageNode][nc.runsNode]) if nc.messageNode in self.contentNode else ''
         }
 
     def generateContent(self):

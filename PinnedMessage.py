@@ -8,9 +8,8 @@ class PinnedMessage(Message):
 
     def buildMessage(self):
         self.contentNode = self.action[nc.addBannerNode]
-        content = self.contentNode[nc.addBannerNode][nc.bannerRendererNode]
-        [nc.liveChatBannerRendererNode][nc.contentNode][nc.liveChatTextMessageRendererNode]
-        header = self.contentNode[nc.addBannerNode][nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.headerNode]
+        content = self.contentNode[nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.contentNode][nc.liveChatTextMessageRendererNode]
+        header = self.contentNode[nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.headerNode]
         self.timeStamp = content[nc.timestampUsecNode]
         self.author = ''
         self.occurrenceTimestamp = content[nc.timestampSimpleTextNode][nc.simpleTextNode]
