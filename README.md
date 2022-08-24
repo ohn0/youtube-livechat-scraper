@@ -1,4 +1,6 @@
 # YT-livechat-scraper
+A dumb tool I made while watching vtubers, scrapes all livechat data from an existing VOD.
+
 grab youtube chat data
 
 This is a python tool for scraping Youtube Livechat data from VOD streams. 
