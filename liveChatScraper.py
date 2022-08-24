@@ -1,4 +1,5 @@
 import nodeConstants as nc
+import constants as con
 from continuation_requestor import ContinuationRequestor
 from livechat_requestor import livechatRequestor
 from livechat_parser import livechatParser
@@ -73,13 +74,15 @@ class LiveChatScraper:
         subRequestor.makeRequest()
         try:
             content = subRequestor.response["continuationContents"]["liveChatContinuation"]["actions"][1::]
+            for c in content:
+                self.content += str(c["replayChatItemAction"])
+                self.contentSet.append(c["replayChatItemAction"])
+            self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
+            self.playerState.playerOffsetMs = self.findOffsetTimeMsecFinal()
         except KeyError:
             print(subRequestor.response)
-        self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
-        for c in content:
-            self.content += str(c["replayChatItemAction"])
-            self.contentSet.append(c["replayChatItemAction"])
-        self.playerState.playerOffsetMs = self.findOffsetTimeMsecFinal()
+            self.playerState.continuation = con.SCRAPE_FINISHED
+
 
     def findOffsetTimeMsecFinal(self):
         finalContent = self.contentSet[-1]
@@ -153,7 +156,7 @@ class LiveChatScraper:
         self.generateInitialState()
         self.endTime = int(self.setInitialParameters())
         self.parseSubsequentContents()
-        while(int(self.playerState.playerOffsetMs) < self.endTime):
+        while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
             try:
                 self.parseSubsequentContents()
             except Exception as e:
@@ -171,7 +174,7 @@ class LiveChatScraper:
         self.generateInitialState()
         self.endTime = int(self.setInitialParameters())
         self.parseSubsequentContents()
-        while(int(self.playerState.playerOffsetMs) < self.endTime):
+        while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
             try:
                 self.parseSubsequentContents()
             except Exception as e:
@@ -197,12 +200,17 @@ class LiveChatScraper:
     
     def generateCleanDataset(self, dataset):
         resultSet = []
-        with open("output/cleaned_"+self.videoTitle+".txt", 'w', encoding='utf-8') as writer:
+        outputLocation = "output/cleaned_"+str(time.time())+"_scrape"+".txt" 
+        with open(outputLocation, 'w', encoding='utf-8') as writer:
             for content in dataset:
-                if("message" in content["content"]):
-                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["message"]}\n')
+                if("purchaseAmount" in content["content"]):
+                    resultSet.append(f'({content["occurrenceTimestamp"]} {content["author"]} purchased superchat({content["content"]["purchaseAmount"]["simpleText"]}) with message:\n\t{content["content"]["message"]}\n')
                 elif("membershipChat" in content["content"]):
                     resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["membershipChat"]}\n')
+                elif("membershipJoin" in content["content"]):
+                    resultSet.append(f'({content["occurrenceTimestamp"]}) ({content["author"]}) joined membership!\n')
+                elif("message" in content["content"]):
+                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["message"]}\n')
             writer.writelines(resultSet)    
 
 
