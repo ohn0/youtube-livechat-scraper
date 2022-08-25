@@ -1,11 +1,11 @@
 import pstats
 import requests
-from continuation_builder import ContinuationFetcher
-from continuation_requestor import ContinuationRequestor
-from livechat_requestor import livechatRequestor
-from livechat_parser import livechatParser
-from player_state import PlayerState
-from subsequent_requestor import SubsequentRequestor
+from continuationBuilder import ContinuationFetcher
+from continuationRequestor import ContinuationRequestor
+from livechatRequestor import livechatRequestor
+from livechatParser import livechatParser
+from playerState import PlayerState
+from subsequentRequestor import SubsequentRequestor
 import json
 
 session = requests.Session()

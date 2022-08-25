@@ -1,5 +1,5 @@
 import requests
-from continuation_builder import ContinuationFetcher
+from continuationBuilder import ContinuationFetcher
 from requestor import Requestor
 import json
 

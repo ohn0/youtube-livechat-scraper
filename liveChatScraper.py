@@ -1,10 +1,10 @@
 import nodeConstants as nc
 import constants as con
-from continuation_requestor import ContinuationRequestor
-from livechat_requestor import livechatRequestor
-from livechat_parser import livechatParser
-from player_state import PlayerState
-from subsequent_requestor import SubsequentRequestor
+from continuationRequestor import ContinuationRequestor
+from livechatRequestor import livechatRequestor
+from livechatParser import livechatParser
+from playerState import PlayerState
+from subsequentRequestor import SubsequentRequestor
 from initialDocumentExtractor import initialExtractor
 from initialDocumentRequestor import initialDocumentRequestor
 from PinnedMessage import PinnedMessage
@@ -28,7 +28,7 @@ class LiveChatScraper:
     initialLiveChatContents = None
     endTime = 0
     videoTitle = ''
-    outputFileName = 'output/outputContent.json'
+    outputFileName = 'outputContent.json'
     VIDEO_ID_LENGTH = 11
 
     def __init__(self, videoUrl):
@@ -41,7 +41,7 @@ class LiveChatScraper:
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
         self.videoTitle = initialContent["videoDetails"]["title"]
-        self.outputFileName = f'output/{self.videoTitle}_{time.time()}.json'
+        self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -181,7 +181,7 @@ class LiveChatScraper:
                 print("Exception encountered: {0}".format(str(e)))
                 with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
                     writer.write(str(self.outputMessages))
-        with(open('output/raw_output.json', 'w', encoding='utf-8')) as writer:
+        with(open('raw_output.json', 'w', encoding='utf-8')) as writer:
             writer.write(json.dumps(self.contentSet))
         output = self.outputMessages()
         if(cleanData):
@@ -190,7 +190,7 @@ class LiveChatScraper:
             self.writeContentToFile(json.dumps(output))
 
     def outputContentFromScrapedFile(self, filename):
-        with open("output/"+filename, 'r+', encoding='utf-8') as reader:
+        with open(""+filename, 'r+', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
         return self.outputMessages()
 
@@ -200,7 +200,7 @@ class LiveChatScraper:
     
     def generateCleanDataset(self, dataset):
         resultSet = []
-        outputLocation = "output/cleaned_"+str(time.time())+"_scrape"+".txt" 
+        outputLocation = "cleaned_"+str(time.time())+"_scrape"+".txt" 
         with open(outputLocation, 'w', encoding='utf-8') as writer:
             for content in dataset:
                 if("purchaseAmount" in content["content"]):
