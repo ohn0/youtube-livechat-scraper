@@ -1,3 +1,4 @@
+from fileinput import filename
 import nodeConstants as nc
 import constants as con
 from continuationRequestor import ContinuationRequestor
@@ -30,6 +31,7 @@ class LiveChatScraper:
     videoTitle = ''
     outputFileName = 'outputContent.json'
     VIDEO_ID_LENGTH = 11
+    invalid_characters = ['<', '>', ':', '"', '/', '\\','|', '?', '*']
 
     def __init__(self, videoUrl):
         self.videoUrl= videoUrl
@@ -40,7 +42,7 @@ class LiveChatScraper:
         initialDocument = documentRequestor.getContent(self.videoUrl)
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
-        self.videoTitle = initialContent["videoDetails"]["title"]
+        self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
         self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
@@ -67,6 +69,11 @@ class LiveChatScraper:
         parser.findContent()
         self.playerState = PlayerState()
         self.playerState.continuation = parser.initialContinuation
+
+    def cleanFilename(self, filename):
+        for c in self.invalid_characters:
+            filename.replace(c, '')
+        return filename
 
     def parseSubsequentContents(self):
         subRequestor = SubsequentRequestor(self.videoId, self.playerState)
@@ -161,8 +168,7 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
-                    writer.write(str(self.outputMessages))
+                self.writeContentToFile(str(self.outputMessages))
         with open(self.outputFileName, 'w', encoding='utf-8') as writer:
             returnSet = self.outputMessages()
             for r in returnSet:
@@ -179,10 +185,9 @@ class LiveChatScraper:
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
-                with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
-                    writer.write(str(self.outputMessages))
-        with(open('raw_output.json', 'w', encoding='utf-8')) as writer:
-            writer.write(json.dumps(self.contentSet))
+                self.writeContentToFile(str(self.outputMessages))
+        
+        self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
         output = self.outputMessages()
         if(cleanData):
             self.generateCleanDataset(output)
@@ -190,17 +195,19 @@ class LiveChatScraper:
             self.writeContentToFile(json.dumps(output))
 
     def outputContentFromScrapedFile(self, filename):
-        with open(""+filename, 'r+', encoding='utf-8') as reader:
+        with open(filename, 'r+', encoding='utf-8') as reader:
             self.contentSet = json.load(reader)
         return self.outputMessages()
 
-    def writeContentToFile(self, scrapedContent):
-        with open(self.outputFileName, 'w+', encoding='utf-8') as writer:
+    def writeContentToFile(self, scrapedContent, fileName = None):
+        if(fileName == None):
+            fileName = self.outputFileName
+        with open(fileName, 'w+', encoding='utf-8') as writer:
             writer.write(scrapedContent)
     
     def generateCleanDataset(self, dataset):
         resultSet = []
-        outputLocation = "cleaned_"+str(time.time())+"_scrape"+".txt" 
+        outputLocation = "scraped_"+self.outputFileName+".txt" 
         with open(outputLocation, 'w', encoding='utf-8') as writer:
             for content in dataset:
                 if("purchaseAmount" in content["content"]):
@@ -229,4 +236,7 @@ class LiveChatScraper:
     step 3:
         Use subsequent_requestor and start a loop to grab each block of livechat data. Each time a request is made, the continuation
         value MUST be update to ensure the next obtained block of data does not contain any duplicates or missed values.
+
+    step 4:
+        Once all livechat blocks are obtained, we can write them out to a file.
 '''
