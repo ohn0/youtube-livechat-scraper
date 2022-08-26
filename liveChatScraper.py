@@ -13,6 +13,7 @@ from superchatMessage import superchatMessage
 from membershipmessage import membershipChatMessage
 from membershipGiftedMessage import membershipGiftedMessage
 from chatMessage import chatMessage
+from outputGenerator import outputGenerator
 import json
 import time
 
@@ -32,10 +33,14 @@ class LiveChatScraper:
     outputFileName = 'outputContent.json'
     VIDEO_ID_LENGTH = 11
     invalid_characters = ['<', '>', ':', '"', '/', '\\','|', '?', '*']
+    isDebugging = False
+    generator = None
 
-    def __init__(self, videoUrl):
+    def __init__(self, videoUrl, debugMode = False):
         self.videoUrl= videoUrl
+        self.isDebugging = debugMode
         self.extractVideoID(videoUrl)
+        self.generator = outputGenerator()
 
     def setInitialParameters(self):
         documentRequestor = initialDocumentRequestor()
@@ -44,6 +49,7 @@ class LiveChatScraper:
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
         self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
         self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
+        self.generator.outputName = self.videoTitle;
         return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
 
     def extractVideoID(self, videoUrl):
@@ -72,7 +78,7 @@ class LiveChatScraper:
 
     def cleanFilename(self, filename):
         for c in self.invalid_characters:
-            filename.replace(c, '')
+            filename = filename.replace(c, '')
         return filename
 
     def parseSubsequentContents(self):
@@ -169,30 +175,22 @@ class LiveChatScraper:
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
                 self.writeContentToFile(str(self.outputMessages))
-        with open(self.outputFileName, 'w', encoding='utf-8') as writer:
-            returnSet = self.outputMessages()
-            for r in returnSet:
-                writer.write(r)
+        # with open(self.outputFileName, 'w', encoding='utf-8') as writer:
+        #     returnSet = self.outputMessages()
+        #     for r in returnSet:
+        #         writer.write(r)
 
     def scrapeToFile(self, cleanData = False):
-        self.getContinuation()
-        self.getInitialLiveChatContents()
-        self.generateInitialState()
-        self.endTime = int(self.setInitialParameters())
-        self.parseSubsequentContents()
-        while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
-            try:
-                self.parseSubsequentContents()
-            except Exception as e:
-                print("Exception encountered: {0}".format(str(e)))
-                self.writeContentToFile(str(self.outputMessages))
-        
-        self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
+        self.scrape()
+        if(self.isDebugging):
+            self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
         output = self.outputMessages()
         if(cleanData):
-            self.generateCleanDataset(output)
+            self.generator.generate(output, con.OUTPUT_TEXT)
+            # self.generateCleanDataset(output)
         else:
-            self.writeContentToFile(json.dumps(output))
+            self.generator.generate(json.dumps(output), con.OUTPUT_JSON)
+            # self.writeContentToFile(json.dumps(output))
 
     def outputContentFromScrapedFile(self, filename):
         with open(filename, 'r+', encoding='utf-8') as reader:
@@ -204,7 +202,7 @@ class LiveChatScraper:
             fileName = self.outputFileName
         with open(fileName, 'w+', encoding='utf-8') as writer:
             writer.write(scrapedContent)
-    
+
     def generateCleanDataset(self, dataset):
         resultSet = []
         outputLocation = "scraped_"+self.outputFileName+".txt" 

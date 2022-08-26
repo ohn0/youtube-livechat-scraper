@@ -14,16 +14,6 @@ class initialExtractor:
         startIndex = content.find('{')
         endIndex = len(content) - content[::-1].find('}')
         jsonContents = json.loads(content[startIndex:endIndex])
-        with open ('output/initialExtractor.json', 'w', encoding='utf-8') as writer:
-            writer.write(str(jsonContents))
+        # with open ('output/initialExtractor.json', 'w', encoding='utf-8') as writer:
+        #     writer.write(str(jsonContents))
         return jsonContents
-
-
-# htmlContent = ''
-# with open('z.html', 'r', encoding='utf-8') as reader:
-#     for line in reader:
-#         htmlContent += line
-# # print(htmlContent)
-# ex = initialExtractor()
-# azfw= ex.buildAndGetScript(htmlContent)
-# print(azfw["annotations"][0]["playerAnnotationsExpandedRenderer"]["featuredChannel"]["endTimeMs"])
