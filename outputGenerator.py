@@ -21,7 +21,7 @@ class outputGenerator:
                     resultSet.append(f'({content[cons.occurrenceTimestamp]} {content[cons.author]} purchased superchat({content[cons.content][cons.purchaseAmount][cons.simpleText]}) with message:\n\t{content[cons.content][cons.message]}\n')
                 elif(cons.membershipChat in content[cons.content]):
                     resultSet.append(f'({content[cons.occurrenceTimestamp]}) {content[cons.author]} : {content[cons.content][cons.membershipChat]}\n')
-                elif(cons.membershipJoin     in content[cons.content]):
+                elif(cons.membershipJoin in content[cons.content]):
                     resultSet.append(f'({content[cons.occurrenceTimestamp]}) ({content[cons.author]}) joined membership!\n')
                 elif(cons.message in content[cons.content]):
                     resultSet.append(f'({content[cons.occurrenceTimestamp]}) {content[cons.author]} : {content[cons.content][cons.message]}\n')

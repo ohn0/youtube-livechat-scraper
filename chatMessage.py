@@ -12,7 +12,8 @@ class chatMessage(Message):
         self.contentNode = self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode]
         self.occurrenceTimestamp = self.contentNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
         self.timeStamp = self.contentNode[nc.timestampUsecNode]
-        self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
+        if(nc.authorNode in self.contentNode):
+            self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
         self.contextMessage = {
             "message" : self.extractText(self.contentNode[nc.messageNode][nc.runsNode]),
             "emoji" : self.extractEmojis(self.contentNode[nc.messageNode][nc.runsNode]) 

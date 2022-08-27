@@ -35,6 +35,7 @@ class LiveChatScraper:
     invalid_characters = ['<', '>', ':', '"', '/', '\\','|', '?', '*']
     isDebugging = False
     generator = None
+    requestor = None
 
     def __init__(self, videoUrl, debugMode = False):
         self.videoUrl= videoUrl
@@ -82,18 +83,17 @@ class LiveChatScraper:
         return filename
 
     def parseSubsequentContents(self):
-        subRequestor = SubsequentRequestor(self.videoId, self.playerState)
-        subRequestor.buildFetcher()
-        subRequestor.makeRequest()
+        self.requestor.makeRequest()
         try:
-            content = subRequestor.response["continuationContents"]["liveChatContinuation"]["actions"][1::]
+            content = self.requestor.response["continuationContents"]["liveChatContinuation"]["actions"][1::]
             for c in content:
-                self.content += str(c["replayChatItemAction"])
                 self.contentSet.append(c["replayChatItemAction"])
-            self.playerState.continuation = subRequestor.updateContinuation(subRequestor.response)
+            
+            self.playerState.continuation = self.requestor.updateContinuation(self.requestor.response)
             self.playerState.playerOffsetMs = self.findOffsetTimeMsecFinal()
+            self.requestor.updateFetcher(self.playerState.continuation, self.playerState.playerOffsetMs)
         except KeyError:
-            print(subRequestor.response)
+            print(self.requestor.response)
             self.playerState.continuation = con.SCRAPE_FINISHED
 
 
@@ -168,17 +168,17 @@ class LiveChatScraper:
         self.getInitialLiveChatContents()
         self.generateInitialState()
         self.endTime = int(self.setInitialParameters())
+        self.requestor = SubsequentRequestor(self.videoId, self.playerState)
+        self.requestor.buildFetcher()
+        print('Beginning to make web calls to get livechat data')
         self.parseSubsequentContents()
         while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
             try:
+                print(f'progress: {float(self.playerState.playerOffsetMs)/float(self.endTime):.2%}', end="\r")
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
                 self.writeContentToFile(str(self.outputMessages))
-        # with open(self.outputFileName, 'w', encoding='utf-8') as writer:
-        #     returnSet = self.outputMessages()
-        #     for r in returnSet:
-        #         writer.write(r)
 
     def scrapeToFile(self, cleanData = False):
         self.scrape()
@@ -187,10 +187,8 @@ class LiveChatScraper:
         output = self.outputMessages()
         if(cleanData):
             self.generator.generate(output, con.OUTPUT_TEXT)
-            # self.generateCleanDataset(output)
         else:
             self.generator.generate(json.dumps(output), con.OUTPUT_JSON)
-            # self.writeContentToFile(json.dumps(output))
 
     def outputContentFromScrapedFile(self, filename):
         with open(filename, 'r+', encoding='utf-8') as reader:

@@ -14,3 +14,7 @@ class Requestor:
 
     def buildFetcher(self):
         self.fetcher = ContinuationFetcher(self.videoId, self.playerState)
+
+    def updateFetcher(self, continuation, offset):
+        self.fetcher.params["continuation"] = continuation
+        self.fetcher.params["currentPlayerState"] = {"playerOffsetMs" : offset}
