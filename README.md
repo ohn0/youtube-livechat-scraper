@@ -1,5 +1,5 @@
 # youtube-livechat-scraper
-A dumb tool I made while watching vtubers, scrapes all livechat data from an existing VOD for anyone who wants to look.
+A dumb tool I made while watching vtubers, scrapes all livechat data from an existing VOD for anyone curious about how the chat is behaving during a livestream.
   
   The tool scrapes an existing VOD's livechat and outputs all the messages, superchat message and price, memberships joined, membership gifts, and membership messages.
   
