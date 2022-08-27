@@ -16,6 +16,7 @@ from chatMessage import chatMessage
 from outputGenerator import outputGenerator
 import json
 import time
+from math import floor
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 
@@ -36,6 +37,7 @@ class LiveChatScraper:
     isDebugging = False
     generator = None
     requestor = None
+    sleepValue = 3
 
     def __init__(self, videoUrl, debugMode = False):
         self.videoUrl= videoUrl
@@ -172,9 +174,19 @@ class LiveChatScraper:
         self.requestor.buildFetcher()
         print('Beginning to make web calls to get livechat data')
         self.parseSubsequentContents()
+        hasSlept = True
+        currentInterval = 0
         while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
             try:
-                print(f'progress: {float(self.playerState.playerOffsetMs)/float(self.endTime):.2%}', end="\r")
+                progress = float(self.playerState.playerOffsetMs)/float(self.endTime)
+                print(f'progress: {progress:.2%}', end="\r")
+                flooredProgress = floor(progress * 100)
+                if(currentInterval != flooredProgress):
+                    hasSlept = False
+                if(flooredProgress % 10 == 0 and not hasSlept):
+                    time.sleep(self.sleepValue)
+                    currentInterval = flooredProgress
+                    hasSlept = True
                 self.parseSubsequentContents()
             except Exception as e:
                 print("Exception encountered: {0}".format(str(e)))
