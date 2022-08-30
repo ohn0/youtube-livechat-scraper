@@ -1,4 +1,5 @@
 import constants as cons
+import json
 class outputGenerator:
     outputName = ''
     def __init__(self):
@@ -28,6 +29,7 @@ class outputGenerator:
             writer.writelines(resultSet)    
     
     def generateJsonDataset(self, dataset):
+        dataset = json.dumps(dataset)
         filename = self.outputName+".json"
         with open(filename, 'w', encoding='utf-8') as jsonWriter:
             jsonWriter.write(dataset)

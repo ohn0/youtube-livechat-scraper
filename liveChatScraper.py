@@ -200,7 +200,7 @@ class LiveChatScraper:
         if(cleanData):
             self.generator.generate(output, con.OUTPUT_TEXT)
         else:
-            self.generator.generate(json.dumps(output), con.OUTPUT_JSON)
+            self.generator.generate(output, con.OUTPUT_JSON)
 
     def outputContentFromScrapedFile(self, filename):
         with open(filename, 'r+', encoding='utf-8') as reader:
