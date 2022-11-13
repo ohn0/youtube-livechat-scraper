@@ -103,40 +103,6 @@ class LiveChatScraper:
         finalContent = self.contentSet[-1]
         return finalContent["videoOffsetTimeMsec"]
 
-    def outputContent(self):
-        returnSet = []
-        for c in self.contentSet:
-            comment = ''
-            timestamp = ''
-            author = ''
-            giftContent = False
-            superChatContent = False
-            if(nc.tickerItemActionNode in c[nc.actionsNode][0] 
-               or nc.addBannerNode in c[nc.actionsNode][0] #pinned message
-               or nc.liveChatMembershipNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode] #membership joined
-               or nc.liveChatMembershipGiftPurchasedAnnouncementNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]  #gift membership purchased
-               or nc.liveChatTickerSponsorNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode] #gift message
-               ):
-                giftContent = True
-            elif(nc.liveChatPaidMessageNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]): #superchat
-                superChatContent = True
-
-            if not giftContent and not superChatContent:
-                if(nc.liveChatMembershipNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]):
-                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.timestampSimpleTextNode][nc.simpleTextNode] 
-                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.authorNode][nc.simpleTextNode]
-                    comment = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.messageNode][nc.runsNode][0][nc.textNode]
-                elif(nc.emojiNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0]):
-                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
-                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][ nc.itemNode][nc.liveChatTextMessageRendererNode][nc.authorNode][nc.simpleTextNode]
-                    comment =  c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0][nc.emojiNode][nc.imageNode][nc.accessibilityNode][nc.accessibilityDataNode][nc.labelNode]
-                else:
-                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
-                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.authorNode][nc.simpleTextNode]
-                    comment = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0][nc.textNode]
-                returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
-        return returnSet
-
     def outputMessages(self):
         messages = []
         for c in self.contentSet:
