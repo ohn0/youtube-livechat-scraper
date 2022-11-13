@@ -111,36 +111,36 @@ class LiveChatScraper:
             author = ''
             giftContent = False
             superChatContent = False
-            if("addLiveChatTickerItemAction" in c["actions"][0] 
-               or "addBannerToLiveChatCommand" in c["actions"][0] #pinned message
-               or "liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #membership joined
-               or "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in c["actions"][0]["addChatItemAction"]["item"]  #gift membership purchased
-               or "liveChatTickerSponsorItemRenderer" in c["actions"][0]["addChatItemAction"]["item"] #gift message
+            if(nc.tickerItemActionNode in c[nc.actionsNode][0] 
+               or nc.addBannerNode in c[nc.actionsNode][0] #pinned message
+               or nc.liveChatMembershipNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode] #membership joined
+               or nc.liveChatMembershipGiftPurchasedAnnouncementNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]  #gift membership purchased
+               or nc.liveChatTickerSponsorNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode] #gift message
                ):
                 giftContent = True
-            elif("liveChatPaidMessageRenderer" in c["actions"][0]["addChatItemAction"]["item"]): #superchat
+            elif(nc.liveChatPaidMessageNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]): #superchat
                 superChatContent = True
 
             if not giftContent and not superChatContent:
-                if("liveChatMembershipItemRenderer" in c["actions"][0]["addChatItemAction"]["item"]):
-                    timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatMembershipItemRenderer"]["timestampText"]["simpleText"] 
-                    author = c["actions"][0]["addChatItemAction"]["item"]["liveChatMembershipItemRenderer"]["authorName"]["simpleText"]
-                    comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatMembershipItemRenderer"]["message"]["runs"][0]["text"]
-                elif("emoji" in c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]):
-                    timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-                    author = c["actions"][0]["addChatItemAction"][ "item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
-                    comment =  c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["emoji"]["image"]["accessibility"]["accessibilityData"]["label"]
+                if(nc.liveChatMembershipNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode]):
+                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.timestampSimpleTextNode][nc.simpleTextNode] 
+                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.authorNode][nc.simpleTextNode]
+                    comment = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatMembershipNode][nc.messageNode][nc.runsNode][0][nc.textNode]
+                elif(nc.emojiNode in c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0]):
+                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
+                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][ nc.itemNode][nc.liveChatTextMessageRendererNode][nc.authorNode][nc.simpleTextNode]
+                    comment =  c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0][nc.emojiNode][nc.imageNode][nc.accessibilityNode][nc.accessibilityDataNode][nc.labelNode]
                 else:
-                    timestamp = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]
-                    author = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["authorName"]["simpleText"]
-                    comment = c["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]
+                    timestamp = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.timestampSimpleTextNode][nc.simpleTextNode]
+                    author = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.authorNode][nc.simpleTextNode]
+                    comment = c[nc.actionsNode][0][nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode][nc.messageNode][nc.runsNode][0][nc.textNode]
                 returnSet.append("({0}) {1}: {2} \n".format(timestamp, author, comment))
         return returnSet
 
     def outputMessages(self):
         messages = []
         for c in self.contentSet:
-            payload = c["actions"][0]
+            payload = c[nc.actionsNode][0]
             if(nc.tickerItemActionNode in payload):
                 pass
             elif(nc.addBannerNode in payload):
@@ -218,33 +218,12 @@ class LiveChatScraper:
         outputLocation = "scraped_"+self.outputFileName+".txt" 
         with open(outputLocation, 'w', encoding='utf-8') as writer:
             for content in dataset:
-                if("purchaseAmount" in content["content"]):
-                    resultSet.append(f'({content["occurrenceTimestamp"]} {content["author"]} purchased superchat({content["content"]["purchaseAmount"]["simpleText"]}) with message:\n\t{content["content"]["message"]}\n')
-                elif("membershipChat" in content["content"]):
-                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["membershipChat"]}\n')
-                elif("membershipJoin" in content["content"]):
-                    resultSet.append(f'({content["occurrenceTimestamp"]}) ({content["author"]}) joined membership!\n')
-                elif("message" in content["content"]):
-                    resultSet.append(f'({content["occurrenceTimestamp"]}) {content["author"]} : {content["content"]["message"]}\n')
+                if(nc.purchaseAmountNode in content[nc.contentNode]):
+                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]} {content[nc.authorNode]} purchased superchat({content[nc.contentNode][nc.purchaseAmountNode][nc.simpleTextNode]}) with message:\n\t{content[nc.contentNode][nc.messageNode]}\n')
+                elif(nc.memberShipChatNode in content[nc.contentNode]):
+                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) {content[nc.authorNode]} : {content[nc.contentNode][nc.memberShipChatNode]}\n')
+                elif(nc.memberShipJoinNode in content[nc.contentNode]):
+                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) ({content[nc.authorNode]}) joined membership!\n')
+                elif(nc.messageNode in content[nc.contentNode]):
+                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) {content[nc.authorNode]} : {content[nc.contentNode][nc.messageNode]}\n')
             writer.writelines(resultSet)    
-
-
-'''                 
-    step 1: 
-        Grab initial continuation value  using continuation builder and requestors, these will require the videoId
-    
-    step 2:
-        Use initial continuation value to fetch first livechat request using livechat_requestor and livechat_parser.
-        The first livechat contents will be returned in a script embedded in a HTML document, which is why the parser is required
-        to extract the contents.
-
-        Ensure the continuation value updates after the livechat_requestor is done executing. The continuation value will update 
-        each time a request is made as it is used to keep track of where we are on the video's timeline.
-
-    step 3:
-        Use subsequent_requestor and start a loop to grab each block of livechat data. Each time a request is made, the continuation
-        value MUST be update to ensure the next obtained block of data does not contain any duplicates or missed values.
-
-    step 4:
-        Once all livechat blocks are obtained, we can write them out to a file.
-'''
