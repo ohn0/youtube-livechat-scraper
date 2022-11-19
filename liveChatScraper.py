@@ -1,6 +1,6 @@
 from fileinput import filename
 import nodeConstants as nc
-import constants as con
+import scraperConstants as con
 from continuationRequestor import ContinuationRequestor
 from livechatRequestor import livechatRequestor
 from livechatParser import livechatParser
@@ -51,9 +51,9 @@ class LiveChatScraper:
         endTimeSeeker = initialExtractor()
         initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
         self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
-        self.outputFileName = f'{self.videoTitle}_{time.time()}.json'
+        self.outputFileName = f'{self.videoTitle}_{time.time()}'
         self.generator.outputName = self.videoTitle;
-        return initialContent["streamingData"]["formats"][0]["approxDurationMs"]
+        self.endTime = int(initialContent["streamingData"]["formats"][0]["approxDurationMs"])
 
     def extractVideoID(self, videoUrl):
         keyStart = videoUrl.find('=')+1
@@ -98,7 +98,6 @@ class LiveChatScraper:
             print(self.requestor.response)
             self.playerState.continuation = con.SCRAPE_FINISHED
 
-
     def findOffsetTimeMsecFinal(self):
         finalContent = self.contentSet[-1]
         return finalContent["videoOffsetTimeMsec"]
@@ -135,10 +134,10 @@ class LiveChatScraper:
         self.getContinuation()
         self.getInitialLiveChatContents()
         self.generateInitialState()
-        self.endTime = int(self.setInitialParameters())
+        self.setInitialParameters()
         self.requestor = SubsequentRequestor(self.videoId, self.playerState)
         self.requestor.buildFetcher()
-        print('Beginning to make web calls to get livechat data')
+        print('Beginning livechat scraping')
         self.parseSubsequentContents()
         hasSlept = True
         currentInterval = 0
@@ -155,29 +154,41 @@ class LiveChatScraper:
                     hasSlept = True
                 self.parseSubsequentContents()
             except Exception as e:
+                print("scraping failed")
                 print("Exception encountered: {0}".format(str(e)))
-                self.writeContentToFile(str(self.outputMessages))
+                self.writeContentToFile(str(self.outputMessages()))
+        print("scraping completed")
 
-    def scrapeToFile(self, cleanData = False):
-        self.scrape()
-        if(self.isDebugging):
-            self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
-        output = self.outputMessages()
-        if(cleanData):
-            self.generator.generate(output, con.OUTPUT_TEXT)
-        else:
-            self.generator.generate(output, con.OUTPUT_JSON)
-
-    def outputContentFromScrapedFile(self, filename):
-        with open(filename, 'r+', encoding='utf-8') as reader:
-            self.contentSet = json.load(reader)
-        return self.outputMessages()
+    # def scrapeToFile(self, cleanData = False):
+    #     self.scrape()
+    #     # if(self.isDebugging):
+    #     #     self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
+    #     output = self.outputMessages()
+    #     if(cleanData):
+    #         self.generator.generate(output, con.OUTPUT_TEXT)
+    #     else:
+    #         self.generator.generate(output, con.OUTPUT_JSON)
 
     def writeContentToFile(self, scrapedContent, fileName = None):
         if(fileName == None):
             fileName = self.outputFileName
         with open(fileName, 'w+', encoding='utf-8') as writer:
             writer.write(scrapedContent)
+
+    def writeRawOutputToFile(self, fileName = None):
+        if(fileName == None):
+            fileName = f'raw_output_{self.outputFileName}'
+        with open(filename, 'w+', encoding='utf-8') as writer:
+            writer.write(self.contentSet)
+
+    def writeToFile(self, writeType, fileName = None):
+        if(fileName == None):
+            fileName = f'{writeType}_{self.outputFileName}'
+        generator = outputGenerator(fileName)
+        if(writeType != con.OUTPUT_RAW):
+            generator.generate(self.outputMessages(), writeType)
+        else:
+            generator.generate(self.contentSet, writeType)
 
     def generateCleanDataset(self, dataset):
         resultSet = []
