@@ -2,7 +2,7 @@ from content import Content
 from message import Message
 from emoji import Emoji
 import nodeConstants as nc
-import json
+import scraperConstants as sCons
 
 class chatMessage(Message):
     def __init__(self, action):
@@ -34,4 +34,4 @@ class chatMessage(Message):
         return text
         
     def generateContent(self):
-        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage).objectOutput()
+        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage, sCons.messageTypeChat).objectOutput()

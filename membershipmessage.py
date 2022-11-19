@@ -5,9 +5,9 @@ class membershipChatMessage(Message):
     membershipDurationHeader = ''
     MESSAGE_TYPES = {"chatMessage": "MEMBERSHIP_CHAT", 
                      "joinMessage" : "MEMBERSHIP_JOINED"}
-    MESSAGE_TYPE_MEMBER_CHAT = "chat"
-    MESSAGE_TYPE_MEMBER_JOIN = "join"
-    MESSAGE_TYPE_MEMBER_RENEWAL = "renew"
+    MESSAGE_TYPE_MEMBER_CHAT = "Membership Chat message"
+    MESSAGE_TYPE_MEMBER_JOIN = "Membership Join message"
+    MESSAGE_TYPE_MEMBER_RENEWAL = "Membership Renew message"
     MESSAGE_TYPE = None
     def __init__(self, chatAction):
         super().__init__(chatAction)
@@ -42,4 +42,4 @@ class membershipChatMessage(Message):
         return contextOutput
 
     def generateContent(self):
-        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage).objectOutput()
+        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage, self.MESSAGE_TYPE).objectOutput()

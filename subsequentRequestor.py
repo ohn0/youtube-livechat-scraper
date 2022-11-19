@@ -4,7 +4,7 @@ from requestor import Requestor
 from playerState import PlayerState
 import json
 import time
-import constants as c
+import scraperConstants as c
 class SubsequentRequestor(Requestor):
     def __init__(self, videoId, pState):
         super().__init__(videoId, pState)
