@@ -1,7 +1,7 @@
 from message import Message
 from content import Content
 import nodeConstants as nc
-
+import scraperConstants as sCons
 class membershipGiftedMessage(Message):
     def __init__(self, action):
         super().__init__(action)
@@ -18,4 +18,5 @@ class membershipGiftedMessage(Message):
         return Content(None,
                        self.timeStamp,
                        self.author,
-                       self.contextMessage).objectOutput()
+                       self.contextMessage,
+                       sCons.messageTypeMembershipGift).objectOutput()

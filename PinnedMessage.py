@@ -1,6 +1,7 @@
 from message import Message
 from content import Content
 import nodeConstants as nc
+import scraperConstants as sCons
 class PinnedMessage(Message):
 
     def __init__(self, action):
@@ -19,6 +20,6 @@ class PinnedMessage(Message):
                 "message" : content[nc.messageNode][nc.runsNode][0][nc.textNode]
         }
     def generateContent(self):
-        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage).objectOutput()
+        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage, sCons.messageTypePinned).objectOutput()
     
     

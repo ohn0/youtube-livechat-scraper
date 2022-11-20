@@ -12,11 +12,6 @@ class ContinuationRequestor(Requestor):
     def makeRequest(self):
         with requests.Session() as continuationFetchSession:
             self.response = continuationFetchSession.post(self.BASE_URL, json=self.fetcher.params).json()
-        # with open('continuationContentsRequest.json', 'w', encoding='utf-8') as writer:
-        #     json.dump(self.fetcher.params, writer)
-                
-        # with open('continuationContents.json', 'w', encoding='utf-8') as writer:
-        #     json.dump(self.response, writer)
         self.bindContinuation()    
         
     def bindContinuation(self):

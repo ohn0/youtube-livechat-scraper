@@ -1,6 +1,7 @@
 from message import Message
 from content import Content
 import nodeConstants as nc
+import scraperConstants as sCons
 
 class superchatMessage(Message):
     def __init__(self, action):
@@ -21,5 +22,6 @@ class superchatMessage(Message):
             self.occurrenceTimestamp,
             self.timeStamp,
             self.author,
-            self.contextMessage
+            self.contextMessage,
+            sCons.messageTypeSuperChat
         ).objectOutput()
