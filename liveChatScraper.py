@@ -3,11 +3,11 @@ import nodeConstants as nc
 import scraperConstants as con
 from playerState import PlayerState
 from subsequentRequestor import SubsequentRequestor
-from PinnedMessage import PinnedMessage
-from superchatMessage import superchatMessage
-from membershipmessage import membershipChatMessage
-from membershipGiftedMessage import membershipGiftedMessage
-from chatMessage import chatMessage
+from messages.PinnedMessage import PinnedMessage
+from messages.superchatMessage import superchatMessage
+from messages.membershipmessage import membershipChatMessage
+from messages.membershipGiftedMessage import membershipGiftedMessage
+from messages.chatMessage import chatMessage
 from outputGenerator import outputGenerator
 from scraperInitializer import ScraperInitializer
 import json
@@ -99,7 +99,6 @@ class LiveChatScraper:
             except Exception as e:
                 print("scraping failed")
                 print("Exception encountered: {0}".format(str(e)))
-                self.writeContentToFile(str(self.outputMessages()))
         print("scraping completed")
 
     def outputMessages(self):

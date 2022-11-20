@@ -1,4 +1,4 @@
-from message import Message
+from messages.message import Message
 from content import Content
 import nodeConstants as nc
 class membershipChatMessage(Message):

@@ -1,5 +1,5 @@
 from content import Content
-from message import Message
+from messages.message import Message
 from emoji import Emoji
 import nodeConstants as nc
 import scraperConstants as sCons
