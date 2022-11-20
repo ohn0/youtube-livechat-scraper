@@ -1,6 +1,6 @@
 import requests
-from continuationBuilder import ContinuationFetcher
-from requestor import Requestor
+from builders.continuationBuilder import ContinuationFetcher
+from requestors.requestor import Requestor
 import json
 
 class ContinuationRequestor(Requestor):

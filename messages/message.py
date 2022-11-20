@@ -1,4 +1,4 @@
-from content import Content
+from messages.fragments.content import Content
 
 class Message:
     occurrenceTimestamp = None #time at which message was generated SINCE stream began

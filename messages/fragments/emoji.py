@@ -1,4 +1,4 @@
-import nodeConstants as nc
+import constants.nodeConstants as nc
 class Emoji:
     name = ''
     isCustom = False

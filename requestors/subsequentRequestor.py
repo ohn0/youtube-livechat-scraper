@@ -1,10 +1,10 @@
 import requests
-from continuationBuilder import ContinuationFetcher
-from requestor import Requestor
-from playerState import PlayerState
+from builders.continuationBuilder import ContinuationFetcher
+from requestors.requestor import Requestor
+from builders.playerState import PlayerState
 import json
 import time
-import scraperConstants as c
+import constants.scraperConstants as c
 class SubsequentRequestor(Requestor):
     def __init__(self, videoId, pState):
         super().__init__(videoId, pState)

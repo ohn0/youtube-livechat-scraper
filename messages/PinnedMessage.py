@@ -1,7 +1,7 @@
-from message import Message
-from content import Content
-import nodeConstants as nc
-import scraperConstants as sCons
+from messages.message import Message
+from messages.fragments.content import Content
+import constants.nodeConstants as nc
+import constants.scraperConstants as sCons
 class PinnedMessage(Message):
 
     def __init__(self, action):

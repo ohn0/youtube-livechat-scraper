@@ -1,5 +1,5 @@
 from inspect import cleandoc
-from liveChatScraper import LiveChatScraper
+from scrapers.liveChatScraper import LiveChatScraper
 import sys
 import time
 import json
