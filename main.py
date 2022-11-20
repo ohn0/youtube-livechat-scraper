@@ -11,6 +11,6 @@ videoUrl = sys.argv[1]
 scraper = LiveChatScraper(videoUrl)
 scraper.scrape()
 scrapedContent = scraper.outputMessages()
-scraper.writeToFile(sCons.OUTPUT_RAW)
+scraper.writeToFile(sCons.OUTPUT_JSON)
 endTime = time.time()
 print(f'program runtime: {endTime - startTime}')

@@ -1,19 +1,15 @@
 from fileinput import filename
 import nodeConstants as nc
 import scraperConstants as con
-from continuationRequestor import ContinuationRequestor
-from livechatRequestor import livechatRequestor
-from livechatParser import livechatParser
 from playerState import PlayerState
 from subsequentRequestor import SubsequentRequestor
-from initialDocumentExtractor import initialExtractor
-from initialDocumentRequestor import initialDocumentRequestor
 from PinnedMessage import PinnedMessage
 from superchatMessage import superchatMessage
 from membershipmessage import membershipChatMessage
 from membershipGiftedMessage import membershipGiftedMessage
 from chatMessage import chatMessage
 from outputGenerator import outputGenerator
+from scraperInitializer import ScraperInitializer
 import json
 import time
 from math import floor
@@ -23,12 +19,10 @@ CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
 class LiveChatScraper:
     videoId = None
     videoUrl = None
-    continuation = ''
     playerState = None
     contentSet = []
     content = ''
     currentOffsetTimeMsec = 0
-    initialLiveChatContents = None
     endTime = 0
     videoTitle = ''
     outputFileName = 'outputContent.json'
@@ -46,10 +40,9 @@ class LiveChatScraper:
         self.generator = outputGenerator()
 
     def setInitialParameters(self):
-        documentRequestor = initialDocumentRequestor()
-        initialDocument = documentRequestor.getContent(self.videoUrl)
-        endTimeSeeker = initialExtractor()
-        initialContent = endTimeSeeker.buildAndGetScript(initialDocument.text)
+        self.playerState = PlayerState()
+        self.playerState.continuation = ScraperInitializer().generateInitialState(self.videoId)
+        initialContent = ScraperInitializer().generateInitialContent(self.videoUrl)
         self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
         self.outputFileName = f'{self.videoTitle}_{time.time()}'
         self.generator.outputName = self.videoTitle;
@@ -59,25 +52,6 @@ class LiveChatScraper:
         keyStart = videoUrl.find('=')+1
         keyEnd = keyStart + self.VIDEO_ID_LENGTH
         self.videoId = videoUrl[keyStart:keyEnd]
-
-    def getContinuation(self):
-        continuationRequestor = ContinuationRequestor(self.videoId)
-        continuationRequestor.buildFetcher()
-        continuationRequestor.makeRequest()
-
-        self.continuation = continuationRequestor.continuation
-
-    def getInitialLiveChatContents(self):
-        liveChatContents = livechatRequestor(self.continuation)
-        liveChatContents.buildURL()
-        self.initialLiveChatContents = liveChatContents.getLiveChatData()
-
-    def generateInitialState(self):
-        parser = livechatParser('html.parser')
-        parser.buildParser(self.initialLiveChatContents)
-        parser.findContent()
-        self.playerState = PlayerState()
-        self.playerState.continuation = parser.initialContinuation
 
     def cleanFilename(self, filename):
         for c in self.invalid_characters:
@@ -101,6 +75,32 @@ class LiveChatScraper:
     def findOffsetTimeMsecFinal(self):
         finalContent = self.contentSet[-1]
         return finalContent["videoOffsetTimeMsec"]
+
+    def scrape(self):
+        self.setInitialParameters()
+        self.requestor = SubsequentRequestor(self.videoId, self.playerState)
+        self.requestor.buildFetcher()
+        print('Beginning livechat scraping')
+        self.parseSubsequentContents()
+        hasSlept = True
+        currentInterval = 0
+        while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
+            try:
+                progress = float(self.playerState.playerOffsetMs)/float(self.endTime)
+                print(f'progress: {progress:.2%}', end="\r")
+                flooredProgress = floor(progress * 100)
+                if(currentInterval != flooredProgress):
+                    hasSlept = False
+                if(flooredProgress % 10 == 0 and not hasSlept):
+                    time.sleep(self.sleepValue)
+                    currentInterval = flooredProgress
+                    hasSlept = True
+                self.parseSubsequentContents()
+            except Exception as e:
+                print("scraping failed")
+                print("Exception encountered: {0}".format(str(e)))
+                self.writeContentToFile(str(self.outputMessages()))
+        print("scraping completed")
 
     def outputMessages(self):
         messages = []
@@ -130,57 +130,6 @@ class LiveChatScraper:
                 messages.append(chat.generateContent())
         return messages
 
-    def scrape(self):
-        self.getContinuation()
-        self.getInitialLiveChatContents()
-        self.generateInitialState()
-        self.setInitialParameters()
-        self.requestor = SubsequentRequestor(self.videoId, self.playerState)
-        self.requestor.buildFetcher()
-        print('Beginning livechat scraping')
-        self.parseSubsequentContents()
-        hasSlept = True
-        currentInterval = 0
-        while(int(self.playerState.playerOffsetMs) < self.endTime and self.playerState.continuation != con.SCRAPE_FINISHED):
-            try:
-                progress = float(self.playerState.playerOffsetMs)/float(self.endTime)
-                print(f'progress: {progress:.2%}', end="\r")
-                flooredProgress = floor(progress * 100)
-                if(currentInterval != flooredProgress):
-                    hasSlept = False
-                if(flooredProgress % 10 == 0 and not hasSlept):
-                    time.sleep(self.sleepValue)
-                    currentInterval = flooredProgress
-                    hasSlept = True
-                self.parseSubsequentContents()
-            except Exception as e:
-                print("scraping failed")
-                print("Exception encountered: {0}".format(str(e)))
-                self.writeContentToFile(str(self.outputMessages()))
-        print("scraping completed")
-
-    # def scrapeToFile(self, cleanData = False):
-    #     self.scrape()
-    #     # if(self.isDebugging):
-    #     #     self.writeContentToFile(json.dumps(self.contentSet), 'raw_output.json')
-    #     output = self.outputMessages()
-    #     if(cleanData):
-    #         self.generator.generate(output, con.OUTPUT_TEXT)
-    #     else:
-    #         self.generator.generate(output, con.OUTPUT_JSON)
-
-    def writeContentToFile(self, scrapedContent, fileName = None):
-        if(fileName == None):
-            fileName = self.outputFileName
-        with open(fileName, 'w+', encoding='utf-8') as writer:
-            writer.write(scrapedContent)
-
-    def writeRawOutputToFile(self, fileName = None):
-        if(fileName == None):
-            fileName = f'raw_output_{self.outputFileName}'
-        with open(filename, 'w+', encoding='utf-8') as writer:
-            writer.write(self.contentSet)
-
     def writeToFile(self, writeType, fileName = None):
         if(fileName == None):
             fileName = f'{writeType}_{self.outputFileName}'
@@ -189,18 +138,3 @@ class LiveChatScraper:
             generator.generate(self.outputMessages(), writeType)
         else:
             generator.generate(self.contentSet, writeType)
-
-    def generateCleanDataset(self, dataset):
-        resultSet = []
-        outputLocation = "scraped_"+self.outputFileName+".txt" 
-        with open(outputLocation, 'w', encoding='utf-8') as writer:
-            for content in dataset:
-                if(nc.purchaseAmountNode in content[nc.contentNode]):
-                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]} {content[nc.authorNode]} purchased superchat({content[nc.contentNode][nc.purchaseAmountNode][nc.simpleTextNode]}) with message:\n\t{content[nc.contentNode][nc.messageNode]}\n')
-                elif(nc.memberShipChatNode in content[nc.contentNode]):
-                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) {content[nc.authorNode]} : {content[nc.contentNode][nc.memberShipChatNode]}\n')
-                elif(nc.memberShipJoinNode in content[nc.contentNode]):
-                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) ({content[nc.authorNode]}) joined membership!\n')
-                elif(nc.messageNode in content[nc.contentNode]):
-                    resultSet.append(f'({content[nc.occurrenceTimeStampNode]}) {content[nc.authorNode]} : {content[nc.contentNode][nc.messageNode]}\n')
-            writer.writelines(resultSet)    
