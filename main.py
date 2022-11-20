@@ -1,5 +1,5 @@
-from liveChatScraper import LiveChatScraper
-import scraperConstants as sCons
+from scrapers.liveChatScraper import LiveChatScraper
+import constants.scraperConstants as sCons
 import sys
 import time
 

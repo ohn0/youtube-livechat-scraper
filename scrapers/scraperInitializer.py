@@ -1,8 +1,8 @@
-from continuationRequestor import ContinuationRequestor
-from livechatRequestor import livechatRequestor
-from livechatParser import livechatParser
-from initialDocumentRequestor import initialDocumentRequestor
-from initialDocumentExtractor import initialExtractor
+from requestors.continuationRequestor import ContinuationRequestor
+from requestors.livechatRequestor import livechatRequestor
+from parsers.livechatParser import livechatParser
+from requestors.initialDocumentRequestor import initialDocumentRequestor
+from extractors.initialDocumentExtractor import initialExtractor
 class ScraperInitializer:
     def __init__(self) -> None:
         pass

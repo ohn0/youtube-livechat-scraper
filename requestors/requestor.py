@@ -1,4 +1,4 @@
-from continuationBuilder import ContinuationFetcher
+from builders.continuationBuilder import ContinuationFetcher
 
 class Requestor:
     BASE_URL = ''

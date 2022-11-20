@@ -1,15 +1,15 @@
 from fileinput import filename
-import nodeConstants as nc
-import scraperConstants as con
-from playerState import PlayerState
-from subsequentRequestor import SubsequentRequestor
+import constants.nodeConstants as nc
+import constants.scraperConstants as con
+from builders.playerState import PlayerState
+from requestors.subsequentRequestor import SubsequentRequestor
 from messages.PinnedMessage import PinnedMessage
 from messages.superchatMessage import superchatMessage
 from messages.membershipmessage import membershipChatMessage
 from messages.membershipGiftedMessage import membershipGiftedMessage
 from messages.chatMessage import chatMessage
-from outputGenerator import outputGenerator
-from scraperInitializer import ScraperInitializer
+from generators.outputGenerator import outputGenerator
+from scrapers.scraperInitializer import ScraperInitializer
 import json
 import time
 from math import floor

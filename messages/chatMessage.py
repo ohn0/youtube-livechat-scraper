@@ -1,8 +1,8 @@
-from content import Content
+from messages.fragments.content import Content
 from messages.message import Message
-from emoji import Emoji
-import nodeConstants as nc
-import scraperConstants as sCons
+from messages.fragments.emoji import Emoji
+import constants.nodeConstants as nc
+import constants.scraperConstants as sCons
 
 class chatMessage(Message):
     def __init__(self, action):

@@ -1,4 +1,4 @@
-import scraperConstants as cons
+import constants.scraperConstants as cons
 import json
 import uuid
 class outputGenerator:

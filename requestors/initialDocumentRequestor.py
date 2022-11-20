@@ -1,4 +1,4 @@
-from requestor import Requestor
+from requestors.requestor import Requestor
 import requests
 class initialDocumentRequestor(Requestor):
     response = ''

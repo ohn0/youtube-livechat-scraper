@@ -1,4 +1,4 @@
-from playerState import PlayerState
+from builders.playerState import PlayerState
 
 class ContinuationFetcher:
     params = {}

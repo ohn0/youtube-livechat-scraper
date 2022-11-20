@@ -1,6 +1,6 @@
 from messages.message import Message
-from content import Content
-import nodeConstants as nc
+from messages.fragments.content import Content
+import constants.nodeConstants as nc
 class membershipChatMessage(Message):
     membershipDurationHeader = ''
     MESSAGE_TYPES = {"chatMessage": "MEMBERSHIP_CHAT", 

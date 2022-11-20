@@ -1,7 +1,7 @@
 from messages.message import Message
-from content import Content
-import nodeConstants as nc
-import scraperConstants as sCons
+from messages.fragments.content import Content
+import constants.nodeConstants as nc
+import constants.scraperConstants as sCons
 class membershipGiftedMessage(Message):
     def __init__(self, action):
         super().__init__(action)
