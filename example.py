@@ -3,14 +3,8 @@ import constants.scraperConstants as sCons
 import sys
 import time
 
-if(len(sys.argv) == 1):
-    print("Insufficient number of arguments entered.")
-    sys.exit()
-
-
-def testScraperOutputToJson():
+def testScraperOutputToJson(videoUrl):
     startTime = time.time()
-    videoUrl = sys.argv[1]
     scraper = LiveChatScraper(videoUrl)
     scraper.scrape()
     scrapedContent = scraper.outputMessages()
@@ -18,4 +12,9 @@ def testScraperOutputToJson():
     endTime = time.time()
     print(f'program runtime: {endTime - startTime}')
 
-testScraperOutputToJson()
+if(len(sys.argv) == 1):
+    sampleVideoUrl = "https://www.youtube.com/watch?v=MNraBP_LoNM"
+    testScraperOutputToJson(sampleVideoUrl)
+else:
+    testScraperOutputToJson(sys.argv[1])
+
