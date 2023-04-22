@@ -1,6 +1,7 @@
 import requests
 from builders.continuationBuilder import ContinuationFetcher
 from requestors.requestor import Requestor
+import constants.nodeConstants
 import json
 
 class ContinuationRequestor(Requestor):
@@ -15,4 +16,10 @@ class ContinuationRequestor(Requestor):
         self.bindContinuation()    
         
     def bindContinuation(self):
-        self.continuation = self.response["contents"]["twoColumnWatchNextResults"]["conversationBar"]["liveChatRenderer"]["continuations"][0]["reloadContinuationData"]["continuation"]
+        try:
+            self.continuation = self.response[constants.nodeConstants.contentNode][constants.nodeConstants.twoColumnWatchNextResultsNode] \
+            [constants.nodeConstants.conversationBarNode][constants.nodeConstants.liveChatRendererNode][constants.nodeConstants.continuationsNode] \
+            [0][constants.nodeConstants.reloadContinuationDataNode][constants.nodeConstants.continuationNode]
+        except KeyError:
+            print("Unable to find matching key, video stream might not have a livechat or livechat could still be processing.")
+            

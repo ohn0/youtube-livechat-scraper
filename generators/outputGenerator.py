@@ -41,5 +41,5 @@ class outputGenerator:
 
     def generateRaw(self, content):
         jsonContent = json.dumps(content)
-        with open(self.outputName, 'w+', encoding='utf-8') as writer:
+        with open(self.outputName+".txt", 'w+', encoding='utf-8') as writer:
             writer.write(jsonContent)

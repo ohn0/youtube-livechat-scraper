@@ -8,10 +8,13 @@ class ScraperInitializer:
         pass
 
     def generateInitialState(self, videoId):
-        requestor = ContinuationRequestor(videoId)
-        requestor.buildFetcher()
-        requestor.makeRequest()
-        return self.generateInitialContinuation(requestor.continuation)
+        try:
+            requestor = ContinuationRequestor(videoId)
+            requestor.buildFetcher()
+            requestor.makeRequest()
+            return self.generateInitialContinuation(requestor.continuation)
+        except Exception as e:
+            print("error configuring initial scraper state and making first request")
 
     def generateInitialContinuation(self, continuation):
         contents = livechatRequestor(continuation)

@@ -32,6 +32,7 @@ class LiveChatScraper:
     generator = None
     requestor = None
     sleepValue = 3
+    initializationSuccessful = False
 
     def __init__(self, videoUrl, debugMode = False):
         self.videoUrl= videoUrl
@@ -40,13 +41,17 @@ class LiveChatScraper:
         self.generator = outputGenerator()
 
     def setInitialParameters(self):
-        self.playerState = PlayerState()
-        self.playerState.continuation = ScraperInitializer().generateInitialState(self.videoId)
-        initialContent = ScraperInitializer().generateInitialContent(self.videoUrl)
-        self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
-        self.outputFileName = f'{self.videoTitle}_{time.time()}'
-        self.generator.outputName = self.videoTitle;
-        self.endTime = int(initialContent["streamingData"]["formats"][0]["approxDurationMs"])
+        try:
+            self.playerState = PlayerState()
+            self.playerState.continuation = ScraperInitializer().generateInitialState(self.videoId)
+            initialContent = ScraperInitializer().generateInitialContent(self.videoUrl)
+            self.videoTitle = self.cleanFilename(initialContent["videoDetails"]["title"])
+            self.outputFileName = f'{self.videoTitle}_{time.time()}'
+            self.generator.outputName = self.videoTitle
+            self.endTime = int(initialContent["streamingData"]["formats"][0]["approxDurationMs"])
+            self.initializationSuccessful = True
+        except Exception as e:
+            print("error encountered attempting to set initial parameters.")
 
     def extractVideoID(self, videoUrl):
         keyStart = videoUrl.find('=')+1
@@ -78,6 +83,9 @@ class LiveChatScraper:
 
     def scrape(self):
         self.setInitialParameters()
+        if(not self.initializationSuccessful):
+            print("Unable to initialize scraper successfully, quitting")
+            return False
         self.requestor = SubsequentRequestor(self.videoId, self.playerState)
         self.requestor.buildFetcher()
         print('Beginning livechat scraping')
@@ -100,6 +108,7 @@ class LiveChatScraper:
                 print("scraping failed")
                 print("Exception encountered: {0}".format(str(e)))
         print("scraping completed")
+        return True
 
     def outputMessages(self):
         messages = []
