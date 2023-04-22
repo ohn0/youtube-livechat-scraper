@@ -1,26 +1,28 @@
 # youtube-livechat-scraper
-A dumb tool I made while watching vtubers, scrapes all livechat data from an existing VOD for anyone curious about how the chat is behaving during a livestream.
-  
-  The tool scrapes an existing VOD's livechat and outputs all the messages, superchat message and price, memberships joined, membership gifts, and membership messages.
-  
+A tool to scrape youtube livechat data I came up with while watching vtubers. It rips almost all data from a VOD's livechat including the following:
+- Chat messages
+- Superchats
+- Memberships joined
+- Memberships gifted and received
 
-USAGE:
+All of the data can be wrapped up in a large raw JSON object that also contains lots of metadata from the responses, like the author, the time the message got sent, etc.
+
+## USAGE:
 
 Requires the following python packages:
   
-  BeautifulSoup
+  - Python3
+  - BeautifulSoup
+  - Requests
   
-  Requests
-  
-  This tool works in python3, download the project and open a terminal in the root directory.
-  
-  Run the main.py script and add the Youtube video URL of the VOD whose livechat you want to scrape.
-  
-  ex: python main.py https://www.youtube.com/watch?v=sAaudXJ5IjU
-  
-  the default version will output the contents into a JSON array, with object being a chat element(message, superchat, etc.)
+- Import the LiveChatScraper from scrapers.liveChatScraper to wherever you want to make the scraping call.
+- Find a VOD URL and copy it
+- Create a LiveChatScraper object and pass in the VOD's URL.
+- Call the scrape() method on the created scraper object and the scrape will run.
+- Once the scrape is completed, you can call ouputMessages() to get a dictionary with all the scraped data.
+- You can all save the scraped data as a JSON to a fill by calling the writeToFile method passing the OUTPUT_JSON constant
 
-  Currently it works on completed streams, scraping livestream live chat is planned.
+* example.py has a working example which saves the json data to a text file.
 
 
   
