@@ -1,5 +1,8 @@
-from requestors.requestor import Requestor
 import requests
+
+from requestors.requestor import Requestor
+
+
 class initialDocumentRequestor(Requestor):
     response = ''
     def __init__(self):

@@ -12,7 +12,6 @@ class livechatParser:
     
     def buildParser(self, liveChatData):
         self.soupParser = BeautifulSoup(liveChatData.text, self.parseType)
-
     def findContent(self):
         scripts = self.soupParser.find_all('script')
         content = str([x for x in scripts if "authorName" in x.text][0])

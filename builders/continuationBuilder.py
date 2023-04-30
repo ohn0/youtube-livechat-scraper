@@ -1,18 +1,16 @@
-from builders.playerState import PlayerState
-
 class ContinuationFetcher:
     params = {}
-    playerState = None
+    player_state = None
     def __init__(self, videoId, pState = None):
-        self.playerState = pState
+        self.player_state = pState
         self.initializeParams(videoId)
 
     def initializeParams(self, videoId):
         self.params["context"] = self.initializeContext()
 
-        if self.playerState != None:
-            self.params["continuation"] = self.playerState.continuation
-            self.params["currentPlayerState"] = {"playerOffsetMs" : str(self.playerState.playerOffsetMs)}
+        if self.player_state != None:
+            self.params["continuation"] = self.player_state.continuation
+            self.params["currentPlayerState"] = {"playerOffsetMs" : str(self.player_state.playerOffsetMs)}
         else:
             self.params["videoId"] = videoId
             self.params["params"] = ""
@@ -24,7 +22,7 @@ class ContinuationFetcher:
 
     def initializeContext(self):
         context = {}
-        context["client"] = self.initializeClient()
+        context["client"] = self.__initialize_client()
         context["user"]= {"lockedSafetyMode" : False}
         context["request"] = {}
         context["clickTracking"] = {}
@@ -32,7 +30,7 @@ class ContinuationFetcher:
 
         return context
     
-    def initializeClient(self):
+    def __initialize_client(self):
         client = {}
         client["hl"] = "en"
         client["gl"] = "US"
@@ -59,9 +57,7 @@ class ContinuationFetcher:
         client["screenDensityFloat"] = 1
         client["utcOffsetMinutes"] = -240
         client["clientScreen"] = "WATCH"
-        client["mainAppWebInfo"] = {"graftUrl": "", "webDisplayMode" : "WEB_DISPLAY_MODE_BROWSER", "isWebNativeShareAvailable" : False}
-        
+        client["mainAppWebInfo"] = {"graftUrl": "", "webDisplayMode" : "WEB_DISPLAY_MODE_BROWSER"\
+            , "isWebNativeShareAvailable" : False}
+
         return client
-
-
-        

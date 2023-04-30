@@ -22,7 +22,7 @@ Requires the following python packages:
 - Once the scrape is completed, you can call ouputMessages() to get a dictionary with all the scraped data.
 - You can all save the scraped data as a JSON to a fill by calling the writeToFile method passing the OUTPUT_JSON constant
 
-* example.py has a working example which saves the json data to a text file.
+* example.py has a working example which saves the data to different formats
 
 
   

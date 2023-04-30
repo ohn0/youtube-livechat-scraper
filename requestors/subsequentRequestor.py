@@ -1,19 +1,21 @@
-import requests
-from builders.continuationBuilder import ContinuationFetcher
-from requestors.requestor import Requestor
-from builders.playerState import PlayerState
 import json
 import time
+
+import requests
+
 import constants.scraperConstants as c
+from requestors.requestor import Requestor
+
+
 class SubsequentRequestor(Requestor):
     def __init__(self, videoId, pState):
         super().__init__(videoId, pState)
-        self.BASE_URL = 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat_replay?prettyPrint=false'
-        self.continuation = self.playerState.continuation
+        self.base_url = 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat_replay?prettyPrint=false'
+        self.continuation = self.player_state.continuation
 
     def makeRequest(self, debug = False):
         with requests.Session() as session:
-            self.response = session.post(self.BASE_URL, json=self.fetcher.params).json()
+            self.response = session.post(self.base_url, json=self.fetcher.params).json()
         if(debug):
             with open('output/subsequentContents_{0}.json'.format(time.time()), 'w', encoding='utf-8') as writer:
                 json.dump(self.response, writer)

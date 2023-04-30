@@ -1,20 +1,20 @@
 from builders.continuationBuilder import ContinuationFetcher
 
 class Requestor:
-    BASE_URL = ''
-    videoId = ''
+    base_url = ''
+    video_id = ''
     continuation = ''
-    playerState = None
+    player_state = None
     fetcher = None
     response = None
 
-    def __init__(self, videoId, playerState=None):
-        self.videoId = videoId
-        self.playerState = playerState
+    def __init__(self, video_id, player_state=None):
+        self.video_id = video_id
+        self.player_state = player_state
 
-    def buildFetcher(self):
-        self.fetcher = ContinuationFetcher(self.videoId, self.playerState)
+    def build_fetcher(self):
+        self.fetcher = ContinuationFetcher(self.video_id, self.player_state)
 
-    def updateFetcher(self, continuation, offset):
+    def update_fetcher(self, continuation, offset):
         self.fetcher.params["continuation"] = continuation
         self.fetcher.params["currentPlayerState"] = {"playerOffsetMs" : offset}

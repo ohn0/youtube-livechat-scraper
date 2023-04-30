@@ -1,19 +1,21 @@
-from requestors.continuationRequestor import ContinuationRequestor
-from requestors.livechatRequestor import livechatRequestor
-from parsers.livechatParser import livechatParser
-from requestors.initialDocumentRequestor import initialDocumentRequestor
 from extractors.initialDocumentExtractor import initialExtractor
+from parsers.livechatParser import livechatParser
+from requestors.continuation_requestor import ContinuationRequestor
+from requestors.initialDocumentRequestor import initialDocumentRequestor
+from requestors.livechatRequestor import livechatRequestor
+
+
 class ScraperInitializer:
     def __init__(self) -> None:
         pass
 
-    def generateInitialState(self, videoId):
+    def generateInitialState(self, video_id):
         try:
-            requestor = ContinuationRequestor(videoId)
-            requestor.buildFetcher()
-            requestor.makeRequest()
+            requestor = ContinuationRequestor(video_id)
+            requestor.build_fetcher()
+            requestor.make_request()
             return self.generateInitialContinuation(requestor.continuation)
-        except Exception as e:
+        except Exception as _:
             print("error configuring initial scraper state and making first request")
 
     def generateInitialContinuation(self, continuation):
