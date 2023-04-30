@@ -1,4 +1,4 @@
-import constants.scraperConstants as cons
+import constants.scraper_constants as cons
 import json
 import uuid
 class outputGenerator:
@@ -23,14 +23,14 @@ class outputGenerator:
         resultSet = []
         with open(filename, 'w', encoding='utf-8') as writer:
             for content in dataset:
-                if(cons.purchaseAmount in content[cons.content]):
-                    resultSet.append(f'({content[cons.occurrenceTimestamp]} {content[cons.author]} purchased superchat({content[cons.content][cons.purchaseAmount][cons.simpleText]}) with message:\n\t{content[cons.content][cons.message]}\n')
-                elif(cons.membershipChat in content[cons.content]):
-                    resultSet.append(f'({content[cons.occurrenceTimestamp]}) {content[cons.author]} : {content[cons.content][cons.membershipChat]}\n')
-                elif(cons.membershipJoin in content[cons.content]):
-                    resultSet.append(f'({content[cons.occurrenceTimestamp]}) ({content[cons.author]}) joined membership!\n')
-                elif(cons.message in content[cons.content]):
-                    resultSet.append(f'({content[cons.occurrenceTimestamp]}) {content[cons.author]} : {content[cons.content][cons.message]}\n')
+                if(cons.PURCHASE_AMOUNT in content[cons.CONTENT]):
+                    resultSet.append(f'({content[cons.OCCURENCE_TIMESTAMP]} {content[cons.AUTHOR]} purchased superchat({content[cons.CONTENT][cons.PURCHASE_AMOUNT][cons.SIMPLE_TEXT]}) with message:\n\t{content[cons.CONTENT][cons.MESSAGE]}\n')
+                elif(cons.MEMBERSHIP_CHAT in content[cons.CONTENT]):
+                    resultSet.append(f'({content[cons.OCCURENCE_TIMESTAMP]}) {content[cons.AUTHOR]} : {content[cons.CONTENT][cons.MEMBERSHIP_CHAT]}\n')
+                elif(cons.MEMBERSHIP_JOIN in content[cons.CONTENT]):
+                    resultSet.append(f'({content[cons.OCCURENCE_TIMESTAMP]}) ({content[cons.AUTHOR]}) joined membership!\n')
+                elif(cons.MESSAGE in content[cons.CONTENT]):
+                    resultSet.append(f'({content[cons.OCCURENCE_TIMESTAMP]}) {content[cons.AUTHOR]} : {content[cons.CONTENT][cons.MESSAGE]}\n')
             writer.writelines(resultSet)    
     
     def generateJsonDataset(self, dataset):

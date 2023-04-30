@@ -3,7 +3,7 @@ import time
 from math import floor
 
 import constants.node_constants as nc
-import constants.scraperConstants as con
+import constants.scraper_constants as con
 from builders.player_state import PlayerState
 from generators.outputGenerator import outputGenerator
 from messages.chatMessage import chatMessage

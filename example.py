@@ -2,7 +2,7 @@
 import sys
 import time
 from scrapers.liveChatScraper import LiveChatScraper
-import constants.scraperConstants as sCons
+import constants.scraper_constants as sCons
 
 
 def test_scraper_output(video_url):

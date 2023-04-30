@@ -5,7 +5,7 @@ import time
 
 import requests
 
-import constants.scraperConstants as c
+import constants.scraper_constants as c
 from requestors.requestor import Requestor
 
 
