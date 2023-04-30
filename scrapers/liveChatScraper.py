@@ -115,26 +115,26 @@ class LiveChatScraper:
         """"build a messages list that contains all the chat messages"""
         messages = []
         for c in self.contentSet:
-            payload = c[nc.actionsNode][0]
-            if nc.tickerItemActionNode in payload:
+            payload = c[nc.ACTIONS_NODE][0]
+            if nc.TICKER_ITEM_ACTION_NODE in payload:
                 pass
-            elif nc.addBannerNode in payload:
+            elif nc.ADD_BANNER_NODE in payload:
                 pinned_message = PinnedMessage(payload)
                 pinned_message.buildMessage()
                 messages.append(pinned_message.generateContent())
-            elif nc.liveChatPaidMessageNode in payload[nc.addChatItemActionNode][nc.itemNode]:
+            elif nc.LIVECHAT_PAID_MESSAGE_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 superchat = superchatMessage(payload)
                 superchat.buildMessage()
                 messages.append(superchat.generateContent())
-            elif nc.liveChatMembershipNode in payload[nc.addChatItemActionNode][nc.itemNode]:
+            elif nc.LIVECHAT_MEMBERSHIP_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership = membershipChatMessage(payload)
                 membership.buildMessage()
                 messages.append(membership.generateContent())
-            elif nc.liveChatMembershipGiftPurchasedAnnouncementNode in payload[nc.addChatItemActionNode][nc.itemNode]:
+            elif nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership_gift = membershipGiftedMessage(payload)
                 membership_gift.buildMessage()
                 messages.append(membership_gift.generateContent())
-            elif nc.liveChatTextMessageRendererNode in payload[nc.addChatItemActionNode][nc.itemNode]:
+            elif nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 chat = chatMessage(payload)
                 chat.buildMessage()
                 messages.append(chat.generateContent())

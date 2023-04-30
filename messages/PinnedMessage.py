@@ -8,16 +8,16 @@ class PinnedMessage(Message):
         super().__init__(action)
 
     def buildMessage(self):
-        self.contentNode = self.action[nc.addBannerNode]
-        content = self.contentNode[nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.contentNode][nc.liveChatTextMessageRendererNode]
-        header = self.contentNode[nc.bannerRendererNode][nc.liveChatBannerRendererNode][nc.headerNode]
-        self.timeStamp = content[nc.timestampUsecNode]
+        self.CONTENT_NODE = self.action[nc.ADD_BANNER_NODE]
+        content = self.CONTENT_NODE[nc.BANNER_RENDERER_NODE][nc.LIVECHAT_BANNER_RENDERER_NODE][nc.CONTENT_NODE][nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE]
+        header = self.CONTENT_NODE[nc.BANNER_RENDERER_NODE][nc.LIVECHAT_BANNER_RENDERER_NODE][nc.HEADER_NODE]
+        self.timeStamp = content[nc.TIMESTAMP_USEC_NODE]
         self.author = ''
-        self.occurrenceTimestamp = content[nc.timestampSimpleTextNode][nc.simpleTextNode]
-        runsContent = header[nc.bannerHeaderRendererNode][nc.textNode]
+        self.occurrenceTimestamp = content[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
+        runsContent = header[nc.BANNER_HEADER_RENDERER_NODE][nc.TEXT_NODE]
         self.contextMessage = {
                 "pinned_by" : self.runsMessageBuilder(runsContent),
-                "message" : content[nc.messageNode][nc.runsNode][0][nc.textNode]
+                "message" : content[nc.MESSAGE_NODE][nc.RUNS_NODE][0][nc.TEXT_NODE]
         }
     def generateContent(self):
         return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage, sCons.messageTypePinned).objectOutput()

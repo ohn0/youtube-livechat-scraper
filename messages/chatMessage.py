@@ -9,21 +9,21 @@ class chatMessage(Message):
         super().__init__(action)
 
     def buildMessage(self):
-        self.contentNode = self.action[nc.addChatItemActionNode][nc.itemNode][nc.liveChatTextMessageRendererNode]
-        self.occurrenceTimestamp = self.contentNode[nc.timestampSimpleTextNode][nc.simpleTextNode]
-        self.timeStamp = self.contentNode[nc.timestampUsecNode]
-        if(nc.authorNode in self.contentNode):
-            self.author = self.contentNode[nc.authorNode][nc.simpleTextNode]
+        self.CONTENT_NODE = self.action[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE][nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE]
+        self.occurrenceTimestamp = self.CONTENT_NODE[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
+        self.timeStamp = self.CONTENT_NODE[nc.TIMESTAMP_USEC_NODE]
+        if(nc.AUTHOR_NODE in self.CONTENT_NODE):
+            self.author = self.CONTENT_NODE[nc.AUTHOR_NODE][nc.SIMPLE_TEXT_NODE]
         self.contextMessage = {
-            "message" : self.extractText(self.contentNode[nc.messageNode][nc.runsNode]),
-            "emoji" : self.extractEmojis(self.contentNode[nc.messageNode][nc.runsNode]) 
+            "message" : self.extractText(self.CONTENT_NODE[nc.MESSAGE_NODE][nc.RUNS_NODE]),
+            "emoji" : self.extractEmojis(self.CONTENT_NODE[nc.MESSAGE_NODE][nc.RUNS_NODE]) 
         }
 
     def extractEmojis(self, runs):
         emojis = []
         for run in runs:
             if("emoji" in run):
-                emojis.append(Emoji(run[nc.emojiNode]).getContent())
+                emojis.append(Emoji(run[nc.EMOJI_NODE]).getContent())
         return emojis
 
     def extractText(self, runs):

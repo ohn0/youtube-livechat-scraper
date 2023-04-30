@@ -19,11 +19,11 @@ class ContinuationRequestor(Requestor):
 
     def __bind_continuation(self):
         try:
-            self.continuation = self.response[constants.nodeConstants.contentNode]\
-            [constants.nodeConstants.twoColumnWatchNextResultsNode][constants.nodeConstants\
-            .conversationBarNode][constants.nodeConstants.liveChatRendererNode][constants.\
-            nodeConstants.continuationsNode][0][constants.nodeConstants.\
-            reloadContinuationDataNode][constants.nodeConstants.continuationNode]
+            self.continuation = self.response[constants.nodeConstants.CONTENT_NODE]\
+            [constants.nodeConstants.TWO_COLUMN_WATCH_NEXT_RESULTS_NODE][constants.nodeConstants\
+            .CONVERSATION_BAR_NODE][constants.nodeConstants.LIVECHAT_RENDERER_NODE][constants.\
+            nodeConstants.CONTINUATIONS_NODE][0][constants.nodeConstants.\
+            RELOAD_CONTINUATION_DATA_NODE][constants.nodeConstants.CONTINUATION_NODE]
         except KeyError:
             print("Unable to find matching key, video stream might not have a livechat \
                 or livechat could still be processing.")

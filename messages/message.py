@@ -6,7 +6,7 @@ class Message:
     author = None
     outputMessage = ''
     action = None
-    contentNode = None
+    CONTENT_NODE = None
     contextMessage = None
 
     def __init__(self, action):
