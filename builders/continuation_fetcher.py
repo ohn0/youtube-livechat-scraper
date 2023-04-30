@@ -15,7 +15,7 @@ class ContinuationFetcher:
         if self.player_state is not None:
             self.params["continuation"] = self.player_state.continuation
             self.params["currentPlayerState"] = \
-                {"playerOffsetMs" : str(self.player_state.playerOffsetMs)}
+                {"playerOffsetMs" : str(self.player_state.player_offset_ms)}
         else:
             self.params["videoId"] = video_id
             self.params["params"] = ""

@@ -4,7 +4,7 @@ from math import floor
 
 import constants.nodeConstants as nc
 import constants.scraperConstants as con
-from builders.playerState import PlayerState
+from builders.player_state import PlayerState
 from generators.outputGenerator import outputGenerator
 from messages.chatMessage import chatMessage
 from messages.membershipGiftedMessage import membershipGiftedMessage
