@@ -11,7 +11,7 @@ from messages.membershipGiftedMessage import membershipGiftedMessage
 from messages.membershipmessage import membershipChatMessage
 from messages.PinnedMessage import PinnedMessage
 from messages.superchatMessage import superchatMessage
-from requestors.subsequentRequestor import SubsequentRequestor
+from requestors.subsequent_requestor import SubsequentRequestor
 from scrapers.scraperInitializer import ScraperInitializer
 from scrapers.video import Video
 
@@ -62,13 +62,13 @@ class LiveChatScraper:
         return output_filename
 
     def __parse_subsequent_contents(self):
-        self.requestor.makeRequest()
+        self.requestor.make_request()
         try:
             action_contents = self.requestor.response["continuationContents"]\
                 ["liveChatContinuation"]["actions"][1::]
             for content in action_contents:
                 self.contentSet.append(content["replayChatItemAction"])
-            self.player_state.continuation = self.requestor.updateContinuation\
+            self.player_state.continuation = self.requestor.update_continuation\
                 (self.requestor.response)
             self.player_state.playerOffsetMs = self.__find_final_offset_time()
             self.requestor.update_fetcher\
