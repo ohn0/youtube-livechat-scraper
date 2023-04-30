@@ -1,18 +1,23 @@
+"""holds fetcher object used to store params for POST calls"""
 class ContinuationFetcher:
+    """class used to build an object that holds all\
+ the parameters to pass for fetching livechat data"""
     params = {}
     player_state = None
-    def __init__(self, videoId, pState = None):
-        self.player_state = pState
-        self.initializeParams(videoId)
+    def __init__(self, video_id, player_state = None):
+        self.player_state = player_state
+        self.intialize_params(video_id)
 
-    def initializeParams(self, videoId):
-        self.params["context"] = self.initializeContext()
+    def intialize_params(self, video_id):
+        """configure params for POST call to initial values."""
+        self.params["context"] = self.__initialize_context()
 
-        if self.player_state != None:
+        if self.player_state is not None:
             self.params["continuation"] = self.player_state.continuation
-            self.params["currentPlayerState"] = {"playerOffsetMs" : str(self.player_state.playerOffsetMs)}
+            self.params["currentPlayerState"] = \
+                {"playerOffsetMs" : str(self.player_state.playerOffsetMs)}
         else:
-            self.params["videoId"] = videoId
+            self.params["videoId"] = video_id
             self.params["params"] = ""
             self.params["racyCheckOk"] = False
             self.params["contentCheckOk"] = False
@@ -20,7 +25,7 @@ class ContinuationFetcher:
             self.params["playbackContext"] = {}
             self.params["captionRequested"] = False
 
-    def initializeContext(self):
+    def __initialize_context(self):
         context = {}
         context["client"] = self.__initialize_client()
         context["user"]= {"lockedSafetyMode" : False}
@@ -29,7 +34,7 @@ class ContinuationFetcher:
         context["adSignalsInfo"] = {}
 
         return context
-    
+
     def __initialize_client(self):
         client = {}
         client["hl"] = "en"

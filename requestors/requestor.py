@@ -1,5 +1,5 @@
 """holds a video and the current state of the stream; where the scrape is currently scraping."""
-from builders.continuationBuilder import ContinuationFetcher
+from builders.continuation_fetcher import ContinuationFetcher
 
 class Requestor:
     """holds a livestream archive and the currently scraped location along the stream's timeline."""
