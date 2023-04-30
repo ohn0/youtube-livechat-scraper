@@ -5,9 +5,6 @@ class Content:
     content = None
     messageType = None
     
-    def __init__(self):
-        pass
-
     def __init__(self, occurrenceTimeStamp, timeStamp, author, content, messageType):
         self.occurrenceTimestamp = occurrenceTimeStamp
         self.timeStamp = timeStamp

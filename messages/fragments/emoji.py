@@ -1,4 +1,4 @@
-import constants.nodeConstants as nc
+import constants.node_constants as nc
 class Emoji:
     name = ''
     isCustom = False
@@ -8,7 +8,7 @@ class Emoji:
 
     def setProperties(self, emoji):
         self.name = emoji[nc.IMAGE_NODE][nc.ACCESSIBILITY_NODE][nc.ACCESSIBILITY_DATA_NODE][nc.LABEL_NODE]
-        self.isCustom = nc.CUSTOM_EMOJI_NODE in emoji 
+        self.isCustom = nc.CUSTOM_EMOJI_NODE in emoji
         if(self.isCustom):
             self.imageUrl = emoji[nc.IMAGE_NODE][nc.THUMBNAIL_NODE][1][nc.URL_NODE]
         else:

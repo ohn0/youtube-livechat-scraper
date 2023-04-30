@@ -1,7 +1,7 @@
 from messages.fragments.content import Content
 from messages.message import Message
 from messages.fragments.emoji import Emoji
-import constants.nodeConstants as nc
+import constants.node_constants as nc
 import constants.scraperConstants as sCons
 
 class chatMessage(Message):

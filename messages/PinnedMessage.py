@@ -1,6 +1,6 @@
 from messages.message import Message
 from messages.fragments.content import Content
-import constants.nodeConstants as nc
+import constants.node_constants as nc
 import constants.scraperConstants as sCons
 class PinnedMessage(Message):
 

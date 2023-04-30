@@ -2,7 +2,7 @@
 import time
 from math import floor
 
-import constants.nodeConstants as nc
+import constants.node_constants as nc
 import constants.scraperConstants as con
 from builders.player_state import PlayerState
 from generators.outputGenerator import outputGenerator
