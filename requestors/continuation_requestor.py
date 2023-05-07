@@ -1,3 +1,5 @@
+"""Module for making a continuation requests to youtube and retrieving
+raw livechat responses."""
 import requests
 
 import constants.node_constants
@@ -5,7 +7,8 @@ from requestors.requestor import Requestor
 
 
 class ContinuationRequestor(Requestor):
-
+    """Class for making a continuation requests to youtube, allows making requests
+    and grabbing the new continuation value for the next request."""
     def __init__(self, videoId):
         super().__init__(videoId)
         self.base_url = 'https://www.youtube.com/youtubei/v1/next?'
