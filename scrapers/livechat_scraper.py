@@ -42,8 +42,8 @@ class LiveChatScraper:
         try:
             self.player_state = PlayerState()
             self.player_state.continuation = ScraperInitializer()\
-                .generateInitialState(self.video.video_id)
-            initial_content = ScraperInitializer().generateInitialContent(self.video.video_url)
+                .generate_initial_state(self.video.video_id)
+            initial_content = ScraperInitializer().generate_initial_content(self.video.video_url)
             self.video.video_title = self.__clean_filename(initial_content["videoDetails"]["title"])
             self.output_filename = f'{self.video.video_title}_{time.time()}'
             self.end_time = int(initial_content["streamingData"]["formats"][0]["approxDurationMs"])
