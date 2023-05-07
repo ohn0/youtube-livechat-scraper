@@ -1,7 +1,7 @@
 """"example to see how the live chat scraper scrapes and outputs data."""
 import sys
 import time
-from scrapers.liveChatScraper import LiveChatScraper
+from scrapers.livechat_scraper import LiveChatScraper
 import constants.scraper_constants as sCons
 
 

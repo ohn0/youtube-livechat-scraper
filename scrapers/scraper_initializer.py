@@ -1,8 +1,8 @@
 from extractors.initial_document_extractor import InitialExtractor
-from parsers.livechatParser import livechatParser
+from parsers.livechat_parser import livechatParser
 from requestors.continuation_requestor import ContinuationRequestor
-from requestors.initialDocumentRequestor import initialDocumentRequestor
-from requestors.livechatRequestor import livechatRequestor
+from requestors.initial_document_requestor import initialDocumentRequestor
+from requestors.livechat_requestor import livechatRequestor
 
 
 class ScraperInitializer:

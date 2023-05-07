@@ -7,12 +7,12 @@ import constants.scraper_constants as con
 from builders.player_state import PlayerState
 from generators.output_generator import OutputGenerator
 from messages.chat_message import ChatMessage
-from messages.membershipGiftedMessage import MembershipGiftedMessage
-from messages.membershipmessage import MembershipChatMessage
-from messages.PinnedMessage import PinnedMessage
-from messages.superchatMessage import SuperChatMessage
+from messages.membership_gifted_message import MembershipGiftedMessage
+from messages.membership_message import MembershipChatMessage
+from messages.pinned_message import PinnedMessage
+from messages.superchat_message import SuperChatMessage
 from requestors.subsequent_requestor import SubsequentRequestor
-from scrapers.scraperInitializer import ScraperInitializer
+from scrapers.scraper_initializer import ScraperInitializer
 from scrapers.video import Video
 
 CONTINUATION_FETCH_BASE_URL = "https://www.youtube.com/youtubei/v1/next?"
