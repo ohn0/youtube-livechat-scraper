@@ -1,7 +1,7 @@
-from messages.fragments.content import Content
-
+"""Base module for all generated messages."""
 class Message:
-    occurrenceTimestamp = None #time at which message was generated SINCE stream began
+    """Base message class for all types of scraped messages"""
+    occurrence_timestamp = None #time at which message was generated SINCE stream began
     timeStamp = None #time at which message was generated
     author = None
     outputMessage = ''
@@ -12,15 +12,11 @@ class Message:
     def __init__(self, action):
         self.action = action
 
-    def buildMessage(self):
-        pass
-
-    def runsMessageBuilder(self, runs):
-        builtMessage = ''
+    def runs_message_builder(self, runs):
+        """constructs a full message given a set of runs which contain YT scraped data"""
+        build_message = ''
         for run in runs:
-            if("text" in run):
-                builtMessage = builtMessage + run["text"]
-        return builtMessage
-
-    def generateContent(self):
-        pass
+            if "text" in run:
+                build_message = build_message + run["text"]
+        return build_message
+        

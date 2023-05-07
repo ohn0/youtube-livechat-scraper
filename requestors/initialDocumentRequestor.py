@@ -8,7 +8,7 @@ class initialDocumentRequestor(Requestor):
     def __init__(self):
         super().__init__(None, None)
 
-    def getContent(self, url):
+    def get_content(self, url):
         with requests.Session() as session:
             self.response = session.get(url)
         return self.response

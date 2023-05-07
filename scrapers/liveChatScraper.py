@@ -5,7 +5,7 @@ from math import floor
 import constants.node_constants as nc
 import constants.scraper_constants as con
 from builders.player_state import PlayerState
-from generators.outputGenerator import outputGenerator
+from generators.output_generator import OutputGenerator
 from messages.chatMessage import chatMessage
 from messages.membershipGiftedMessage import membershipGiftedMessage
 from messages.membershipmessage import membershipChatMessage
@@ -120,23 +120,23 @@ class LiveChatScraper:
                 pass
             elif nc.ADD_BANNER_NODE in payload:
                 pinned_message = PinnedMessage(payload)
-                pinned_message.buildMessage()
+                pinned_message.build_message()
                 messages.append(pinned_message.generateContent())
             elif nc.LIVECHAT_PAID_MESSAGE_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 superchat = superchatMessage(payload)
-                superchat.buildMessage()
+                superchat.build_message()
                 messages.append(superchat.generateContent())
             elif nc.LIVECHAT_MEMBERSHIP_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership = membershipChatMessage(payload)
-                membership.buildMessage()
+                membership.build_message()
                 messages.append(membership.generateContent())
             elif nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership_gift = membershipGiftedMessage(payload)
-                membership_gift.buildMessage()
+                membership_gift.build_message()
                 messages.append(membership_gift.generateContent())
             elif nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 chat = chatMessage(payload)
-                chat.buildMessage()
+                chat.build_message()
                 messages.append(chat.generateContent())
         return messages
 
@@ -144,7 +144,7 @@ class LiveChatScraper:
         """"writes currently scraped content to a file output"""
         if output_filename is None:
             output_filename = f'{write_type}_{self.output_filename}'
-        generator = outputGenerator(output_filename)
+        generator = OutputGenerator(output_filename)
         if write_type != con.OUTPUT_RAW:
             generator.generate(self.output_messages(), write_type)
         else:

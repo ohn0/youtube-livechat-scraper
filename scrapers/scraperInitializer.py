@@ -29,4 +29,4 @@ class ScraperInitializer:
 
     def generateInitialContent(self, videoUrl):
         documentRequestor = initialDocumentRequestor()
-        return InitialExtractor().build_and_get_script(documentRequestor.getContent(videoUrl).text)
+        return InitialExtractor().build_and_get_script(documentRequestor.get_content(videoUrl).text)

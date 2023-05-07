@@ -1,25 +1,30 @@
+"""definitions for how the Content is generated and is output is stored in the Content class"""
 class Content:
-    occurrenceTimestamp = None
-    timeStamp = None
+    """Content class that defines the output fields for each message scraped"""
+    occurence_timestamp = None
+    timestamp = None
     author = None
     content = None
-    messageType = None
-    
-    def __init__(self, occurrenceTimeStamp, timeStamp, author, content, messageType):
-        self.OCCURENCE_TIMESTAMP = occurrenceTimeStamp
-        self.timeStamp = timeStamp
-        self.AUTHOR = author
-        self.CONTENT = content
-        self.messageType = messageType
+    message_type = None
 
-    def simpleOutput(self):
-        return f"{self.OCCURENCE_TIMESTAMP} : {self.AUTHOR} : {self.CONTENT}"
+    def __init__(self, occurence_timestamp, timestamp, author, content, message_type):
+        self.occurence_timestamp = occurence_timestamp
+        self.timestamp = timestamp
+        self.author = author
+        self.content = content
+        self.message_type = message_type
 
-    def objectOutput(self):
+    def simple_output(self):
+        """returns simple output that is message's occurrence time, author, and content generated"""
+        return f"{self.occurence_timestamp} : {self.author} : {self.content}"
+
+    def object_output(self):
+        """returns an object that generates a JSON output for each message."""
         return {
-            "messageType" : self.messageType,
-            "occurrenceTimestamp" : self.OCCURENCE_TIMESTAMP,
-            "timeStampUTC" : self.timeStamp,
-            "author" : self.AUTHOR,
-            "content" : self.CONTENT
+            "message_type" : self.message_type,
+            "occurence_timestamp" : self.occurence_timestamp,
+            "timeStampUTC" : self.timestamp,
+            "author" : self.author,
+            "content" : self.content
         }
+        

@@ -22,9 +22,9 @@ class membershipChatMessage(Message):
         else:
             self.MESSAGE_TYPE = self.MESSAGE_TYPE_MEMBER_RENEWAL
 
-    def buildMessage(self):
+    def build_message(self):
         self.findMembershipMessageType()
-        self.occurrenceTimestamp = self.content_node[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
+        self.occurrence_timestamp = self.content_node[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
         self.timeStamp = self.content_node[nc.TIMESTAMP_USEC_NODE]
         self.author = self.content_node[nc.AUTHOR_NODE][nc.SIMPLE_TEXT_NODE]
         self.contextMessage = self.extractMembershipContextMessage()
@@ -32,14 +32,14 @@ class membershipChatMessage(Message):
     def extractMembershipContextMessage(self):
         contextOutput = ''
         if(self.MESSAGE_TYPE == self.MESSAGE_TYPE_MEMBER_CHAT):
-            contextOutput = {"membershipChat" :  self.runsMessageBuilder(self.content_node[nc.MESSAGE_NODE][nc.RUNS_NODE])}
+            contextOutput = {"membershipChat" :  self.runs_message_builder(self.content_node[nc.MESSAGE_NODE][nc.RUNS_NODE])}
         elif(self.MESSAGE_TYPE == self.MESSAGE_TYPE_MEMBER_JOIN):
-            contextOutput = {"membershipJoin" : self.runsMessageBuilder(self.content_node[nc.HEADER_SUBTEXT_NODE])}
+            contextOutput = {"membershipJoin" : self.runs_message_builder(self.content_node[nc.HEADER_SUBTEXT_NODE])}
         elif(self.MESSAGE_TYPE == self.MESSAGE_TYPE_MEMBER_RENEWAL):
-            contextOutput = {"membershipRenewal" : self.runsMessageBuilder(self.content_node[nc.HEADER_SUBTEXT_NODE])}
+            contextOutput = {"membershipRenewal" : self.runs_message_builder(self.content_node[nc.HEADER_SUBTEXT_NODE])}
         else:
             contextOutput = {"membershipError" : "Unrecognized MESSAGE_TYPE"}
         return contextOutput
 
     def generateContent(self):
-        return Content(self.occurrenceTimestamp, self.timeStamp, self.author, self.contextMessage, self.MESSAGE_TYPE).objectOutput()
+        return Content(self.occurrence_timestamp, self.timeStamp, self.author, self.contextMessage, self.MESSAGE_TYPE).object_output()
