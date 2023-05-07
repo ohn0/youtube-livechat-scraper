@@ -1,8 +1,8 @@
 from extractors.initial_document_extractor import InitialExtractor
 from parsers.livechat_parser import LivechatParser
 from requestors.continuation_requestor import ContinuationRequestor
-from requestors.initial_document_requestor import initialDocumentRequestor
-from requestors.livechat_requestor import livechatRequestor
+from requestors.initial_document_requestor import InitialDocumentRequestor
+from requestors.livechat_requestor import LivechatRequestor
 
 
 class ScraperInitializer:
@@ -19,14 +19,13 @@ class ScraperInitializer:
             print("error configuring initial scraper state and making first request")
 
     def generateInitialContinuation(self, continuation):
-        contents = livechatRequestor(continuation)
-        contents.buildURL()
-        initialContents = contents.getLiveChatData()
+        contents = LivechatRequestor(continuation)
+        initialContents = contents.get_livechat_data()
         parser = LivechatParser('html.parser')
         parser.build_parser(initialContents)
         parser.find_content()
         return parser.initial_continuation
 
     def generateInitialContent(self, videoUrl):
-        documentRequestor = initialDocumentRequestor()
+        documentRequestor = InitialDocumentRequestor()
         return InitialExtractor().build_and_get_script(documentRequestor.get_content(videoUrl).text)

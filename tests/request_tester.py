@@ -2,7 +2,7 @@ import pstats
 import requests
 from builders.continuationBuilder import ContinuationFetcher
 from requestors.continuationRequestor import ContinuationRequestor
-from requestors.livechatRequestor import livechatRequestor
+from requestors.LivechatRequestor import LivechatRequestor
 from parsers.LivechatParser import LivechatParser
 from builders.playerState import PlayerState
 from requestors.subsequentRequestor import SubsequentRequestor
@@ -35,9 +35,9 @@ def getSuccessfulInitialLiveChat():
     requestor.buildFetcher()
     requestor.makeRequest()
 
-    liveChatRequestor = livechatRequestor(requestor.continuation)
+    liveChatRequestor = LivechatRequestor(requestor.continuation)
     liveChatRequestor.buildURL()
-    initialLiveChatData = liveChatRequestor.getLiveChatData()
+    initialLiveChatData = liveChatRequestor.get_livechat_data()
 
     liveChatParser = LivechatParser('html.parser')
     liveChatParser.build_parser(initialLiveChatData)

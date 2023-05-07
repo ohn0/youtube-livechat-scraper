@@ -4,7 +4,7 @@ import requests
 from requestors.requestor import Requestor
 
 
-class initialDocumentRequestor(Requestor):
+class InitialDocumentRequestor(Requestor):
     """Initial livechat request class, which makes the first request to start the
     scraping process, the first request differs from all the subsequent
     requests as the initial livechat data is returned in an HTML file along
