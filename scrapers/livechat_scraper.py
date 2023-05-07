@@ -93,7 +93,8 @@ class LiveChatScraper:
         self.__parse_subsequent_contents()
         has_slept = True
         current_interval = 0
-        while(int(self.player_state.playerOffsetMs) < self.end_time and self.player_state.continuation != con.SCRAPE_FINISHED):
+        while(int(self.player_state.playerOffsetMs) < self.end_time \
+            and self.player_state.continuation != con.SCRAPE_FINISHED):
             try:
                 progress = float(self.player_state.playerOffsetMs)/float(self.end_time)
                 print(f'progress: {progress:.2%}', end="\r")
@@ -114,27 +115,31 @@ class LiveChatScraper:
     def output_messages(self):
         """"build a messages list that contains all the chat messages"""
         messages = []
-        for c in self.contentSet:
-            payload = c[nc.ACTIONS_NODE][0]
+        for content in self.contentSet:
+            payload = content[nc.ACTIONS_NODE][0]
             if nc.TICKER_ITEM_ACTION_NODE in payload:
                 pass
             elif nc.ADD_BANNER_NODE in payload:
                 pinned_message = PinnedMessage(payload)
                 pinned_message.build_message()
                 messages.append(pinned_message.generate_content())
-            elif nc.LIVECHAT_PAID_MESSAGE_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
+            elif nc.LIVECHAT_PAID_MESSAGE_NODE \
+                in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 superchat = SuperChatMessage(payload)
                 superchat.build_message()
                 messages.append(superchat.generate_content())
-            elif nc.LIVECHAT_MEMBERSHIP_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
+            elif nc.LIVECHAT_MEMBERSHIP_NODE \
+                in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership = MembershipChatMessage(payload)
                 membership.build_message()
                 messages.append(membership.generate_content())
-            elif nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
+            elif nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE \
+                in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 membership_gift = MembershipGiftedMessage(payload)
                 membership_gift.build_message()
                 messages.append(membership_gift.generate_content())
-            elif nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
+            elif nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE \
+                in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
                 chat = ChatMessage(payload)
                 chat.build_message()
                 messages.append(chat.generate_content())
