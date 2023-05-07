@@ -3,7 +3,7 @@ import requests
 from builders.continuationBuilder import ContinuationFetcher
 from requestors.continuationRequestor import ContinuationRequestor
 from requestors.livechatRequestor import livechatRequestor
-from parsers.livechatParser import livechatParser
+from parsers.LivechatParser import LivechatParser
 from builders.playerState import PlayerState
 from requestors.subsequentRequestor import SubsequentRequestor
 import json
@@ -39,10 +39,10 @@ def getSuccessfulInitialLiveChat():
     liveChatRequestor.buildURL()
     initialLiveChatData = liveChatRequestor.getLiveChatData()
 
-    liveChatParser = livechatParser('html.parser')
-    liveChatParser.buildParser(initialLiveChatData)
-    content = liveChatParser.findContent()
-    print(liveChatParser.initialContinuation)
+    liveChatParser = LivechatParser('html.parser')
+    liveChatParser.build_parser(initialLiveChatData)
+    content = liveChatParser.find_content()
+    print(liveChatParser.initial_continuation)
     chatMessageList = []
     for c in content[1::]:
         chatMessageList.append(c["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]

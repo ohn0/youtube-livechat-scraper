@@ -1,5 +1,5 @@
 from extractors.initial_document_extractor import InitialExtractor
-from parsers.livechat_parser import livechatParser
+from parsers.livechat_parser import LivechatParser
 from requestors.continuation_requestor import ContinuationRequestor
 from requestors.initial_document_requestor import initialDocumentRequestor
 from requestors.livechat_requestor import livechatRequestor
@@ -22,10 +22,10 @@ class ScraperInitializer:
         contents = livechatRequestor(continuation)
         contents.buildURL()
         initialContents = contents.getLiveChatData()
-        parser = livechatParser('html.parser')
-        parser.buildParser(initialContents)
-        parser.findContent()
-        return parser.initialContinuation
+        parser = LivechatParser('html.parser')
+        parser.build_parser(initialContents)
+        parser.find_content()
+        return parser.initial_continuation
 
     def generateInitialContent(self, videoUrl):
         documentRequestor = initialDocumentRequestor()
