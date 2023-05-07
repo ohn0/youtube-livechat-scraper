@@ -27,7 +27,7 @@ class LiveChatScraper:
     currentOffsetTimeMsec = 0
     end_time = 0
     output_filename = 'outputContent.json'
-    invalid_characters = ['<', '>', ':', '"', '/', '\\','|', '?', '*']
+    invalid_characters = "<>:\"/\\|?*"
     is_debugging = False
     requestor = None
     sleepValue = 3
