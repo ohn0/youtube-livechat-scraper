@@ -6,11 +6,11 @@ import constants.node_constants as nc
 import constants.scraper_constants as con
 from builders.player_state import PlayerState
 from generators.output_generator import OutputGenerator
-from messages.chatMessage import chatMessage
-from messages.membershipGiftedMessage import membershipGiftedMessage
-from messages.membershipmessage import membershipChatMessage
+from messages.chat_message import ChatMessage
+from messages.membershipGiftedMessage import MembershipGiftedMessage
+from messages.membershipmessage import MembershipChatMessage
 from messages.PinnedMessage import PinnedMessage
-from messages.superchatMessage import superchatMessage
+from messages.superchatMessage import SuperChatMessage
 from requestors.subsequent_requestor import SubsequentRequestor
 from scrapers.scraperInitializer import ScraperInitializer
 from scrapers.video import Video
@@ -121,23 +121,23 @@ class LiveChatScraper:
             elif nc.ADD_BANNER_NODE in payload:
                 pinned_message = PinnedMessage(payload)
                 pinned_message.build_message()
-                messages.append(pinned_message.generateContent())
+                messages.append(pinned_message.generate_content())
             elif nc.LIVECHAT_PAID_MESSAGE_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
-                superchat = superchatMessage(payload)
+                superchat = SuperChatMessage(payload)
                 superchat.build_message()
-                messages.append(superchat.generateContent())
+                messages.append(superchat.generate_content())
             elif nc.LIVECHAT_MEMBERSHIP_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
-                membership = membershipChatMessage(payload)
+                membership = MembershipChatMessage(payload)
                 membership.build_message()
-                messages.append(membership.generateContent())
+                messages.append(membership.generate_content())
             elif nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
-                membership_gift = membershipGiftedMessage(payload)
+                membership_gift = MembershipGiftedMessage(payload)
                 membership_gift.build_message()
-                messages.append(membership_gift.generateContent())
+                messages.append(membership_gift.generate_content())
             elif nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE in payload[nc.ADD_CHAT_ITEM_ACTION_NODE][nc.ITEM_NODE]:
-                chat = chatMessage(payload)
+                chat = ChatMessage(payload)
                 chat.build_message()
-                messages.append(chat.generateContent())
+                messages.append(chat.generate_content())
         return messages
 
     def write_to_file(self, write_type, output_filename = None):

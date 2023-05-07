@@ -1,9 +1,9 @@
 from messages.message import Message
 from messages.fragments.content import Content
 import constants.node_constants as nc
-class membershipChatMessage(Message):
+class MembershipChatMessage(Message):
     membershipDurationHeader = ''
-    MESSAGE_TYPES = {"chatMessage": "MEMBERSHIP_CHAT", 
+    MESSAGE_TYPES = {"chat_message": "MEMBERSHIP_CHAT", 
                      "joinMessage" : "MEMBERSHIP_JOINED"}
     MESSAGE_TYPE_MEMBER_CHAT = "Membership Chat message"
     MESSAGE_TYPE_MEMBER_JOIN = "Membership Join message"
@@ -25,9 +25,9 @@ class membershipChatMessage(Message):
     def build_message(self):
         self.findMembershipMessageType()
         self.occurrence_timestamp = self.content_node[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
-        self.timeStamp = self.content_node[nc.TIMESTAMP_USEC_NODE]
+        self.time_stamp = self.content_node[nc.TIMESTAMP_USEC_NODE]
         self.author = self.content_node[nc.AUTHOR_NODE][nc.SIMPLE_TEXT_NODE]
-        self.contextMessage = self.extractMembershipContextMessage()
+        self.context_message = self.extractMembershipContextMessage()
 
     def extractMembershipContextMessage(self):
         contextOutput = ''
@@ -41,5 +41,5 @@ class membershipChatMessage(Message):
             contextOutput = {"membershipError" : "Unrecognized MESSAGE_TYPE"}
         return contextOutput
 
-    def generateContent(self):
-        return Content(self.occurrence_timestamp, self.timeStamp, self.author, self.contextMessage, self.MESSAGE_TYPE).object_output()
+    def generate_content(self):
+        return Content(self.occurrence_timestamp, self.time_stamp, self.author, self.context_message, self.MESSAGE_TYPE).object_output()

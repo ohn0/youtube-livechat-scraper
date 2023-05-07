@@ -11,15 +11,15 @@ class PinnedMessage(Message):
         self.content_node = self.action[nc.ADD_BANNER_NODE]
         content = self.content_node[nc.BANNER_RENDERER_NODE][nc.LIVECHAT_BANNER_RENDERER_NODE][nc.CONTENT_NODE][nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE]
         header = self.content_node[nc.BANNER_RENDERER_NODE][nc.LIVECHAT_BANNER_RENDERER_NODE][nc.HEADER_NODE]
-        self.timeStamp = content[nc.TIMESTAMP_USEC_NODE]
+        self.time_stamp = content[nc.TIMESTAMP_USEC_NODE]
         self.author = ''
         self.occurrence_timestamp = content[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
         runsContent = header[nc.BANNER_HEADER_RENDERER_NODE][nc.TEXT_NODE]
-        self.contextMessage = {
+        self.context_message = {
                 "pinned_by" : self.runs_message_builder(runsContent),
                 "message" : content[nc.MESSAGE_NODE][nc.RUNS_NODE][0][nc.TEXT_NODE]
         }
-    def generateContent(self):
-        return Content(self.occurrence_timestamp, self.timeStamp, self.author, self.contextMessage, sCons.MESSAGE_TYPE_PINNED).object_output()
+    def generate_content(self):
+        return Content(self.occurrence_timestamp, self.time_stamp, self.author, self.context_message, sCons.MESSAGE_TYPE_PINNED).object_output()
     
     

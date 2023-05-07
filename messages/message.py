@@ -2,12 +2,12 @@
 class Message:
     """Base message class for all types of scraped messages"""
     occurrence_timestamp = None #time at which message was generated SINCE stream began
-    timeStamp = None #time at which message was generated
+    time_stamp = None #time at which message was generated
     author = None
     outputMessage = ''
     action = None
     content_node = None
-    contextMessage = None
+    context_message = None
 
     def __init__(self, action):
         self.action = action
