@@ -52,7 +52,9 @@ class LiveChatScraper:
             print("error encountered attempting to set initial parameters.")
 
     def __extract_video_id(self):
-        key_start = self.video.video_url.find('=')+1
+        key_start = self.video.video_url.find('watch')+8
+        if key_start <= 8:
+            key_start = self.video.video_url.find("live/")+5
         key_end = key_start + self.video.VIDEO_ID_LENGTH
         self.video.video_id = self.video.video_url[key_start:key_end]
 
