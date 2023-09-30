@@ -17,24 +17,24 @@ class ChatMessage(Message):
         self.time_stamp = self.content_node[nc.TIMESTAMP_USEC_NODE]
         if nc.AUTHOR_NODE in self.content_node:
             self.author = self.content_node[nc.AUTHOR_NODE][nc.SIMPLE_TEXT_NODE]
-        self.context_message = {
-            "message" : self.__extract_text(self.content_node[nc.MESSAGE_NODE][nc.RUNS_NODE]),
-            "emoji" : self.__extract_emojis(self.content_node[nc.MESSAGE_NODE][nc.RUNS_NODE]) 
-        }
 
-    def __extract_emojis(self, runs):
+        runs = self.content_node[nc.MESSAGE_NODE][nc.RUNS_NODE]
+        message = ""
         emojis = []
+        text_content = ""
         for run in runs:
             if "emoji" in run:
                 emojis.append(Emoji(run[nc.EMOJI_NODE]).get_content())
-        return emojis
+                message += f"${run[nc.EMOJI_NODE][nc.IMAGE_NODE][nc.ACCESSIBILITY_NODE][nc.ACCESSIBILITY_DATA_NODE][nc.LABEL_NODE]} "
+            elif "text" in run:
+                text_content += f"{run[nc.TEXT_NODE]} "
+                message += f"{run[nc.TEXT_NODE]} "
 
-    def __extract_text(self, runs):
-        text = ''
-        for run in runs:
-            if "text" in run:
-                text += run["text"]
-        return text
+        self.context_message = {
+            "message" : message,
+            "emoji" : emojis,
+            "text_content" : text_content
+        }
 
     def generate_content(self):
         """outputs the generated message object"""
