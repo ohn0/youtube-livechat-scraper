@@ -18,5 +18,16 @@ class PurchasedSticker(Message):
         self.author = self.content_node[nc.AUTHOR_NODE][nc.SIMPLE_TEXT_NODE]
         self.occurrence_timestamp = self.content_node[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
         self.context_message = {
-            "sticker" : self.__
+            "sticker_description" : self.content_node["sticker"][nc.ACCESSIBILITY_NODE][nc.ACCESSIBILITY_DATA_NODE][nc.LABEL_NODE],
+            "purchase_amount" : self.content_node[nc.PURCHASE_AMOUNT_NODE][nc.SIMPLE_TEXT_NODE]
         }
+
+    def generate_content(self):
+        """generates purchased sticker message"""
+        return Content(
+            self.occurrence_timestamp,
+            self.time_stamp,
+            self.author,
+            self.context_message,
+            sCons.MESSAGE_TYPE_PURCHASED_STICKER
+        ).object_output()

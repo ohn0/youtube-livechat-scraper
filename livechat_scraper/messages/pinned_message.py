@@ -19,9 +19,9 @@ class PinnedMessage(Message):
         self.time_stamp = content[nc.TIMESTAMP_USEC_NODE]
         self.author = ''
         self.occurrence_timestamp = content[nc.TIMESTAMP_SIMPLE_TEXT_NODE][nc.SIMPLE_TEXT_NODE]
-        content = header[nc.BANNER_HEADER_RENDERER_NODE][nc.TEXT_NODE]
+        headerContent = header[nc.BANNER_HEADER_RENDERER_NODE][nc.TEXT_NODE]
         self.context_message = {
-                "pinned_by" : self.runs_message_builder(content),
+                "pinned_by" : self.runs_message_builder(headerContent),
                 "message" : content[nc.MESSAGE_NODE][nc.RUNS_NODE][0][nc.TEXT_NODE]
         }
 
