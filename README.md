@@ -4,6 +4,7 @@ A tool to scrape youtube livechat data I came up with while watching vtubers. It
 - Superchats
 - Memberships joined
 - Memberships gifted and received
+- Purchased Stickers
 
 All of the data can be wrapped up in a large raw JSON object that also contains lots of metadata from the responses, like the author, the time the message got sent, etc.
 
