@@ -1,8 +1,8 @@
 """"example to see how the live chat scraper scrapes and outputs data."""
 import sys
 import time
-from scrapers.livechat_scraper import LiveChatScraper
-import constants.scraper_constants as sCons
+from livechat_scraper.scrapers import livechat_scraper
+from livechat_scraper.constants import scraper_constants as sCons
 
 
 def test_scraper_output(video_url):
@@ -10,7 +10,7 @@ def test_scraper_output(video_url):
         to a JSON, txt, and raw file.
     """
     start_time = time.time()
-    scraper = LiveChatScraper(video_url)
+    scraper = livechat_scraper.LiveChatScraper(video_url)
     scraper.scrape()
     # saves all messages in a file as a json object
     scraper.write_to_file(sCons.OUTPUT_JSON, "testJson_"+scraper.output_filename)
