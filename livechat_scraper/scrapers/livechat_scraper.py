@@ -6,11 +6,6 @@ from livechat_scraper.constants import node_constants as nc
 from livechat_scraper.constants import scraper_constants as con
 from livechat_scraper.builders.player_state import PlayerState
 from livechat_scraper.generators.output_generator import OutputGenerator
-from livechat_scraper.messages.chat_message import ChatMessage
-from livechat_scraper.messages.membership_gifted_message import MembershipGiftedMessage
-from livechat_scraper.messages.membership_message import MembershipChatMessage
-from livechat_scraper.messages.pinned_message import PinnedMessage
-from livechat_scraper.messages.superchat_message import SuperChatMessage
 from livechat_scraper.requestors.subsequent_requestor import SubsequentRequestor
 from livechat_scraper.scrapers.scraper_initializer import ScraperInitializer
 from livechat_scraper.scrapers.video import Video
