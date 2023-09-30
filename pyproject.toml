@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "youtube-livechat-scraper-ohn0"
-version = "1.0.3"
+version = "1.0.4"
 authors = [
     { name="ohn0", email="silverskinx@gmail.com"},
 ]
