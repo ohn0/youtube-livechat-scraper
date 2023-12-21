@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "youtube-livechat-scraper-ohn0"
-version = "1.0.4"
+version = "1.0.5"
 authors = [
     { name="ohn0", email="silverskinx@gmail.com"},
 ]
@@ -22,3 +22,5 @@ dependencies= [
 ]
 [project.urls]
 "Homepage" = "https://github.com/ohn0/youtube-livechat-scraper"
+[tool.hatch.build.targets.wheel]
+packages = ["livechat_scraper/"]

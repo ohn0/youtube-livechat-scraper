@@ -7,6 +7,7 @@ from livechat_scraper.messages.superchat_message import SuperChatMessage
 from livechat_scraper.messages.message import Message
 from livechat_scraper.messages.membership_redeemed_message import MembershipRedeemedMessage
 from livechat_scraper.messages.purchased_sticker_message import PurchasedSticker
+from livechat_scraper.messages.placeholderItem_message import PlaceholderItem
 class messageFactory():
     """
     Factory class to build Messages, pass in a payload that contains liveChatPaidMessageRenderer,
@@ -21,7 +22,8 @@ class messageFactory():
             nc.LIVECHAT_MEMBERSHIP_GIFT_PURCHASED_ANNOUNCEMENT_NODE: lambda pl: MembershipGiftedMessage(pl),
             nc.LIVECHAT_TEXT_MESSAGE_RENDERER_NODE: lambda pl: ChatMessage(pl),
             nc.LIVECHAT_MEMBERSHIP_GIFT_RECEIVED_ANNOUNCEMENT_NODE: lambda pl: MembershipRedeemedMessage(pl),
-            nc.LIVECHAT_PAID_STICKER_RENDERER : lambda pl: PurchasedSticker(pl)
+            nc.LIVECHAT_PAID_STICKER_RENDERER : lambda pl: PurchasedSticker(pl),
+            nc.LIVECHAT_PLACEHOLDER_ITEM_RENDERER : lambda pl: PlaceholderItem(pl)
         }
 
         self.build_from_root = {
